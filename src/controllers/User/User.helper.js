@@ -1,0 +1,103 @@
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const { isEmail } = require('validator').default
+const db = require('../../db/Postgresql')
+const TABLE = require('../../db/tableName')
+
+const hashingPassword = async (password) => {
+  const saltRounds = 10
+  const hashedPassword = await bcrypt.hash(password, saltRounds)
+
+  return hashedPassword
+}
+
+const generateToken = (type, data) => {
+  if (type === 'refresh') {
+    return jwt.sign(data, process.env.REFRESH_SECRET, { expiresIn: '7 days' })
+  } else if (type === 'access') {
+    return jwt.sign(data, process.env.ACCESS_SECRET, { expiresIn: '10m' })
+  }
+}
+
+const validateSignUp = async (email, username, password) => {
+  // email validation
+  if (!isEmail(email)) {
+    return {
+      error: true,
+      message: 'invalid email',
+    }
+  }
+
+  const { rows: duplicateEmail } = await db.query({
+    text: `SELECT * FROM ${TABLE.USER} WHERE email = $1`,
+    values: [email],
+  })
+
+  if (duplicateEmail.length > 0) {
+    return {
+      error: true,
+      message: 'email already exist',
+    }
+  }
+
+  // username validation
+  if (username.length < 5) {
+    return {
+      error: true,
+      message: 'username length must be greater than five (5) characters',
+    }
+  }
+
+  const { rows: duplicateUsername } = await db.query({
+    text: `SELECT * FROM ${TABLE.USER} WHERE username = $1`,
+    values: [username],
+  })
+
+  if (duplicateUsername.length > 0) {
+    return {
+      error: true,
+      message: 'username already exist',
+    }
+  }
+
+  // password validation
+  if (password.length <= 5) {
+    return {
+      error: true,
+      message: 'password character must be greater than five (5) characters',
+    }
+  }
+
+  return { error: false }
+}
+
+const validateTokenSignIn = async (userId) => {
+  // checking existing refresh token
+  const { rows: existingToken } = await db.query({
+    text: `SELECT id FROM ${TABLE.TOKEN} WHERE user_id = $1`,
+    values: [userId],
+  })
+
+  if (existingToken.length === JSON.parse(process.env.USER_SESSION_LIMIT)) {
+    // delete oldest token if new user sign in (already reach max user session limit)
+    // to be replaced with the new one
+    db.query({
+      text: `
+      DELETE FROM ${TABLE.TOKEN} 
+      WHERE id IN (
+        SELECT id FROM t_refresh_token
+        WHERE user_id = $1
+        ORDER BY updated_at ASC LIMIT 1
+      ) 
+    `,
+      values: [userId],
+    })
+  }
+}
+
+module.exports = {
+  hashingPassword,
+  generateToken,
+  validateSignUp,
+  validateTokenSignIn,
+}
