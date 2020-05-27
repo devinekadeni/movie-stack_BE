@@ -13,6 +13,18 @@ const query = {
       },
     ]
   },
+  genreList() {
+    return [
+      {
+        id: '1',
+        name: 'action',
+      },
+      {
+        id: '2',
+        name: 'mystery',
+      },
+    ]
+  },
 }
 
 module.exports = query
