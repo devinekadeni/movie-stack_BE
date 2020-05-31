@@ -19,7 +19,7 @@ const generateToken = (type, data) => {
   }
 }
 
-const validateSignUp = async (email, username, password) => {
+const validateSignUpField = async (email, name, password) => {
   // email validation
   if (!isEmail(email)) {
     return {
@@ -40,23 +40,11 @@ const validateSignUp = async (email, username, password) => {
     }
   }
 
-  // username validation
-  if (username.length < 5) {
+  // name validation
+  if (name.length < 2) {
     return {
       error: true,
-      message: 'username length must be greater than five (5) characters',
-    }
-  }
-
-  const { rows: duplicateUsername } = await db.query({
-    text: `SELECT * FROM ${TABLE.USER} WHERE username = $1`,
-    values: [username],
-  })
-
-  if (duplicateUsername.length > 0) {
-    return {
-      error: true,
-      message: 'username already exist',
+      message: 'name length must be greater than five (2) characters',
     }
   }
 
@@ -98,6 +86,6 @@ const validateTokenSignIn = async (userId) => {
 module.exports = {
   hashingPassword,
   generateToken,
-  validateSignUp,
+  validateSignUpField,
   validateTokenSignIn,
 }

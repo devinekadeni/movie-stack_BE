@@ -5,7 +5,7 @@ const db = require('../../db/Postgresql')
 const {
   hashingPassword,
   generateToken,
-  validateSignUp,
+  validateSignUpField,
   validateTokenSignIn,
 } = require('./User.helper')
 const {
@@ -16,9 +16,9 @@ const {
 } = require('../../utils/response')
 
 async function SignUp(req, res) {
-  const { username, email, password } = req.body
+  const { name, email, password } = req.body
 
-  const validation = await validateSignUp(email, username, password)
+  const validation = await validateSignUpField(email, name, password)
 
   if (validation.error) {
     return res.status(statusCode.bad).send(
@@ -36,10 +36,10 @@ async function SignUp(req, res) {
     const { rows } = await db.query({
       text: `
         INSERT INTO ${TABLE.USER}
-        (username, email, password) VALUES ($1, $2, $3)
+        (name, email, password) VALUES ($1, $2, $3)
         RETURNING *
       `,
-      values: [username, email, hashedPassword],
+      values: [name, email, hashedPassword],
     })
 
     const accessToken = generateToken('access', { user_id: rows[0].user_id.toString() })
@@ -70,15 +70,11 @@ async function SignUp(req, res) {
 }
 
 async function SignIn(req, res) {
-  const { usernameOrEmail, password } = req.body
-
-  const query = isEmail(usernameOrEmail)
-    ? `SELECT * FROM ${TABLE.USER} WHERE email = $1`
-    : `SELECT * FROM ${TABLE.USER} WHERE username = $1`
+  const { email, password } = req.body
 
   const { rows: userData } = await db.query({
-    text: query,
-    values: [usernameOrEmail],
+    text: `SELECT * FROM ${TABLE.USER} WHERE email = $1`,
+    values: [email],
   })
 
   // validation
@@ -86,7 +82,7 @@ async function SignIn(req, res) {
     return res.status(statusCode.notFound).send(
       responseError({
         errorCode: errorCode.notFound,
-        message: 'invalid email/username or password',
+        message: 'invalid email or password',
       })
     )
   }
@@ -96,7 +92,7 @@ async function SignIn(req, res) {
     return res.status(statusCode.notFound).send(
       responseError({
         errorCode: errorCode.notFound,
-        message: 'invalid email/username or password',
+        message: 'invalid email or password',
       })
     )
   }
