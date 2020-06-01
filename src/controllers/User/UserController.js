@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const TABLE = require('../../db/tableName')
 const db = require('../../db/Postgresql')
 const {
@@ -46,7 +47,7 @@ async function SignUp(req, res) {
 
     // insert new refresh_token
     db.query({
-      text: `INSERT INTO ${TABLE.TOKEN} (user_id, token) VALUES ($1, $2)`,
+      text: `INSERT INTO ${TABLE.TOKEN} (user_id, refresh_token) VALUES ($1, $2)`,
       values: [rows[0].user_id, refreshToken],
     })
 
@@ -105,7 +106,7 @@ async function SignIn(req, res) {
   })
 
   db.query({
-    text: `INSERT INTO ${TABLE.TOKEN} (user_id, token) VALUES ($1, $2)`,
+    text: `INSERT INTO ${TABLE.TOKEN} (user_id, refresh_token) VALUES ($1, $2)`,
     values: [userData[0].user_id, refreshToken],
   })
 
@@ -142,8 +143,43 @@ async function SignOut(req, res) {
   )
 }
 
+async function RefreshToken(req, res) {
+  const { refreshToken } = req.body
+
+  try {
+    const data = jwt.verify(refreshToken, process.env.REFRESH_SECRET)
+    const newAccessToken = generateToken('access', {
+      user_id: data.user_id,
+    })
+    const newRefreshToken = generateToken('refresh', {
+      user_id: data.user_id,
+    })
+
+    db.query({
+      text: `UPDATE ${TABLE.TOKEN} SET refresh_token = $1 WHERE user_id = $2 AND refresh_token = $3`,
+      values: [newRefreshToken, data.user_id, refreshToken],
+    })
+
+    return res.send(
+      responseSuccess({
+        data: {
+          userId: data.user_id,
+          access_token: newAccessToken,
+          refresh_token: newRefreshToken,
+        },
+      })
+    )
+  } catch (error) {
+    return res.status(statusCode.unauthorized).send({
+      errorCode: errorCode.notAuthorized,
+      message: 'User not authorized',
+    })
+  }
+}
+
 module.exports = {
   SignUp,
   SignIn,
   SignOut,
+  RefreshToken,
 }
