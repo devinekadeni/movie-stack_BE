@@ -24,6 +24,7 @@ const errorCode = {
   invalidInput: 'invalid_input',
   serverError: 'server_error',
   notFound: 'not_found',
+  notAuthorized: 'not_authorized',
 }
 
 module.exports = {
