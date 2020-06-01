@@ -18,7 +18,7 @@ async function setupInitialTable() {
 
   await db.query({
     text: `
-    CREATE TABLE public.t_refresh_token (
+    CREATE TABLE t_refresh_token (
       id serial NOT NULL,
       user_id serial NOT NULL,
       refresh_token varchar NULL,

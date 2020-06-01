@@ -1,8 +1,8 @@
 const chalk = require('chalk')
 const { Pool } = require('pg')
 const { devConfig, testConfig } = require('./config')
-const log = console.log
 
+const log = process.env.NODE_ENV === 'test' ? () => {} : console.log
 const config = process.env.NODE_ENV === 'test' ? testConfig : devConfig
 
 const pool = new Pool(config)
