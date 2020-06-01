@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt')
-const { isEmail } = require('validator').default
 const TABLE = require('../../db/tableName')
 const db = require('../../db/Postgresql')
 const {
@@ -53,7 +52,7 @@ async function SignUp(req, res) {
 
     delete rows[0].password
 
-    res.status(statusCode.created).send(
+    return res.status(statusCode.created).send(
       responseSuccess({
         data: { ...rows[0], access_token: accessToken, refresh_token: refreshToken },
       })
@@ -119,7 +118,32 @@ async function SignIn(req, res) {
   )
 }
 
+async function SignOut(req, res) {
+  const refreshToken = req.body.refresh_token
+
+  try {
+    await db.query({
+      text: `DELETE FROM ${TABLE.TOKEN} WHERE refresh_token = $1`,
+      values: [refreshToken],
+    })
+  } catch (error) {
+    return res.status(500).send(
+      responseError({
+        errorCode: errorCode.serverError,
+        message: 'server error, failed logging out user',
+      })
+    )
+  }
+
+  return res.send(
+    responseSuccess({
+      data: 'Sign out successfully',
+    })
+  )
+}
+
 module.exports = {
   SignUp,
   SignIn,
+  SignOut,
 }
