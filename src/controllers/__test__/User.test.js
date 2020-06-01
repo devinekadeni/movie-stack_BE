@@ -125,3 +125,15 @@ describe('SIGN OUT - /signout', () => {
     expect(rows.length).toEqual(0)
   })
 })
+
+describe('REFRESH TOKEN - /refresh_token', () => {
+  test('should generate new token if req.body.refresh_token valid', async () => {
+    const response = await request(app)
+      .post('/user/refresh_token')
+      .send({ refreshToken: user1.refresh_token })
+      .expect(200)
+
+    expect(response.body.status).toBe('success')
+    expect(response.body.data.refresh_token).not.toBe(user1.refresh_token)
+  })
+})
