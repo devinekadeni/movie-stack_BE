@@ -1,6 +1,7 @@
 const request = require('supertest')
 const app = require('../../index')
 const db = require('../../db/Postgresql')
+const TABLE = require('../../db/tableName')
 const { setupInitialTable, clearTable } = require('./fixtures/dbSetup')
 
 beforeAll(async () => {
@@ -21,7 +22,13 @@ describe('SIGN UP - /signup', () => {
     }
     const response = await request(app).post('/user/signup').send(newUser).expect(201)
 
-    expect(response.body.data.email).toBe(newUser.email)
-    expect(response.body.data.name).toBe(newUser.name)
+    const { rows } = await db.query({
+      text: `SELECT * FROM ${TABLE.USER} WHERE user_id = $1`,
+      values: [response.body.data.user_id],
+    })
+
+    expect(rows.length).toBeGreaterThan(0)
+    expect(rows[0].name).toBe(newUser.name)
+    expect(rows[0].email).toBe(newUser.email)
   })
 })
