@@ -1,8 +1,11 @@
 const chalk = require('chalk')
 const { Pool } = require('pg')
+const { devConfig, testConfig } = require('./config')
 const log = console.log
 
-const pool = new Pool()
+const config = process.env.NODE_ENV === 'test' ? testConfig : devConfig
+
+const pool = new Pool(config)
 
 module.exports = {
   query: async (query) => {
@@ -20,4 +23,5 @@ module.exports = {
       throw error
     }
   },
+  closeConnection: () => pool.end(), // for testing needs
 }
