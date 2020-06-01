@@ -4,6 +4,7 @@ const app = require('../../index')
 const db = require('../../db/Postgresql')
 const { statusCode } = require('../../utils/response')
 const TABLE = require('../../db/tableName')
+const { hashingPassword } = require('../User/User.helper')
 const { setupInitialTable, clearTable } = require('./fixtures/dbSetup')
 
 beforeAll(async () => {
@@ -19,11 +20,46 @@ const user1 = {
   name: 'devin',
   email: 'devin@gmail.com',
   password: 'devin123',
+  refresh_token: '',
 }
+
+beforeEach(async () => {
+  const hashedPassword = await hashingPassword(user1.password)
+  const { rows } = await db.query({
+    text: `INSERT INTO ${TABLE.USER} (name, password, email) VALUES ($1, $2, $3) RETURNING *`,
+    values: [user1.name, hashedPassword, user1.email],
+  })
+  const refreshToken = jwt.sign(
+    { user_id: rows[0].user_id.toString },
+    process.env.REFRESH_SECRET
+  )
+  // const refreshToken = generateToken('refresh', rows[0].user_id.toString())
+
+  await db.query({
+    text: `INSERT INTO ${TABLE.TOKEN} (user_id, refresh_token) VALUES ($1, $2)`,
+    values: [rows[0].user_id, refreshToken],
+  })
+
+  user1.refresh_token = refreshToken
+})
+
+afterEach(async () => {
+  await db.query({
+    text: `DELETE FROM ${TABLE.TOKEN}`,
+  })
+  await db.query({
+    text: `DELETE FROM ${TABLE.USER}`,
+  })
+})
 
 describe('SIGN UP - /signup', () => {
   test('should able to register new user', async () => {
-    const response = await request(app).post('/user/signup').send(user1).expect(201)
+    const newUser = {
+      name: 'ekadeni',
+      email: 'ekadeni@gmail.com',
+      password: 'ekadeni123',
+    }
+    const response = await request(app).post('/user/signup').send(newUser).expect(201)
 
     expect(response.body.status).toBe('success')
 
@@ -33,8 +69,8 @@ describe('SIGN UP - /signup', () => {
     })
 
     expect(rows.length).toBeGreaterThan(0)
-    expect(rows[0].name).toBe(user1.name)
-    expect(rows[0].email).toBe(user1.email)
+    expect(rows[0].name).toBe(newUser.name)
+    expect(rows[0].email).toBe(newUser.email)
   })
 })
 
@@ -70,5 +106,22 @@ describe('SIGN IN - /signin', () => {
     })
 
     expect(rows.length).toBeGreaterThan(0)
+  })
+})
+
+describe('SIGN OUT - /signout', () => {
+  test('should able to logout loggedin user', async () => {
+    const response = await request(app)
+      .post('/user/signout')
+      .send({ refresh_token: user1.refresh_token })
+      .expect(200)
+
+    expect(response.body.status).toBe('success')
+
+    const { rows } = await db.query({
+      text: `SELECT * FROM ${TABLE.TOKEN} WHERE refresh_token = $1`,
+      values: [user1.refresh_token],
+    })
+    expect(rows.length).toEqual(0)
   })
 })
