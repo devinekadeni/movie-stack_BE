@@ -1,17 +1,32 @@
+const axios = require('axios').default
+const { movieFormatter } = require('./query.utils')
+
 const query = {
-  popularMovies() {
-    return [
-      {
-        id: '1',
-        title: 'Batman',
-        poster: 'poster.jpg',
-        backdrop: 'backdrop.jpg',
-        genres: ['action', 'fiction'],
-        rating: 8.2,
-        summary: 'the dark knight ben affleck',
-        releaseDate: '2018-08-12',
-      },
-    ]
+  async popularMovies() {
+    try {
+      const { data } = await axios({
+        method: 'get',
+        baseURL: process.env.TMDB_BASE_URL,
+        url: '/discover/movie',
+        headers: {
+          Authorization: `Bearer ${process.env.TOKEN_TMDB}`,
+        },
+        params: {
+          sort_by: 'popularity.desc',
+          page: 2,
+        },
+      })
+
+      return {
+        totalResult: data.total_results,
+        currentPage: data.page,
+        totalPage: data.total_pages,
+        hasMore: data.page !== data.total_pages,
+        movies: movieFormatter(data.results),
+      }
+    } catch (error) {
+      return error
+    }
   },
   genreList() {
     return [
