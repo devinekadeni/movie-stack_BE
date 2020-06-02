@@ -11,6 +11,14 @@ const movieType = gql`
     summary: String!
     releaseDate: String
   }
+
+  type PopularMovies implements queryPagination {
+    totalResult: Int!
+    currentPage: Int!
+    totalPage: Int!
+    hasMore: Boolean!
+    movies: [Movie]!
+  }
 `
 
 module.exports = movieType
