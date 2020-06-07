@@ -1,7 +1,7 @@
-const Query = require('./queryResolver')
+const Query = require('./queryResolver');
 
 const resolvers = {
   Query,
-}
+};
 
-module.exports = resolvers
+module.exports = resolvers;

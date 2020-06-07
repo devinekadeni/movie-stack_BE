@@ -1,5 +1,5 @@
 function movieFormatter(movies) {
-  if (!movies.length) return []
+  if (!movies.length) return [];
 
   return movies.map((movie) => ({
     id: movie.id,
@@ -10,9 +10,9 @@ function movieFormatter(movies) {
     rating: movie.vote_average,
     summary: movie.overview,
     releaseDate: movie.release_date,
-  }))
+  }));
 }
 
 module.exports = {
   movieFormatter,
-}
+};

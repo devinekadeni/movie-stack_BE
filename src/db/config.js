@@ -4,7 +4,7 @@ const devConfig = {
   host: process.env.PGHOST,
   database: process.env.PGDATABASE,
   port: process.env.PGPORT,
-}
+};
 
 const testConfig = {
   user: process.env.PGUSER_TEST,
@@ -12,9 +12,9 @@ const testConfig = {
   host: process.env.PGHOST_TEST,
   database: process.env.PGDATABASE_TEST,
   port: process.env.PGPORT_TEST,
-}
+};
 
 module.exports = {
   devConfig,
   testConfig,
-}
+};

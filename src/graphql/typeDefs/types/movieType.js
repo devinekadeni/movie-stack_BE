@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express')
+const { gql } = require('apollo-server-express');
 
 const movieType = gql`
   type Movie {
@@ -19,6 +19,6 @@ const movieType = gql`
     hasMore: Boolean!
     movies: [Movie]!
   }
-`
+`;
 
-module.exports = movieType
+module.exports = movieType;

@@ -1,5 +1,5 @@
-const axios = require('axios').default
-const { movieFormatter } = require('./query.utils')
+const axios = require('axios').default;
+const { movieFormatter } = require('./query.utils');
 
 const query = {
   async popularMovies() {
@@ -15,7 +15,7 @@ const query = {
           sort_by: 'popularity.desc',
           page: 2,
         },
-      })
+      });
 
       return {
         totalResult: data.total_results,
@@ -23,9 +23,9 @@ const query = {
         totalPage: data.total_pages,
         hasMore: data.page !== data.total_pages,
         movies: movieFormatter(data.results),
-      }
+      };
     } catch (error) {
-      return error
+      return error;
     }
   },
   genreList() {
@@ -38,8 +38,8 @@ const query = {
         id: '2',
         name: 'mystery',
       },
-    ]
+    ];
   },
-}
+};
 
-module.exports = query
+module.exports = query;

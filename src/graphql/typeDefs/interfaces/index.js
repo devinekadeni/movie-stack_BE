@@ -1,5 +1,5 @@
-const responseInterface = require('./responseInterface')
+const responseInterface = require('./responseInterface');
 
-const interfaces = [responseInterface]
+const interfaces = [responseInterface];
 
-module.exports = interfaces
+module.exports = interfaces;

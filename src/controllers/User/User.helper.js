@@ -1,23 +1,23 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const { isEmail } = require('validator').default
-const db = require('../../db/Postgresql')
-const TABLE = require('../../db/tableName')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { isEmail } = require('validator').default;
+const db = require('../../db/Postgresql');
+const TABLE = require('../../db/tableName');
 
 const hashingPassword = async (password) => {
-  const saltRounds = 10
-  const hashedPassword = await bcrypt.hash(password, saltRounds)
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  return hashedPassword
-}
+  return hashedPassword;
+};
 
 const generateToken = (type, data) => {
   if (type === 'refresh') {
-    return jwt.sign(data, process.env.REFRESH_SECRET, { expiresIn: '7 days' })
+    return jwt.sign(data, process.env.REFRESH_SECRET, { expiresIn: '7 days' });
   } else if (type === 'access') {
-    return jwt.sign(data, process.env.ACCESS_SECRET, { expiresIn: '10m' })
+    return jwt.sign(data, process.env.ACCESS_SECRET, { expiresIn: '10m' });
   }
-}
+};
 
 const validateSignUpField = async (email, name, password) => {
   // email validation
@@ -25,19 +25,19 @@ const validateSignUpField = async (email, name, password) => {
     return {
       error: true,
       message: 'invalid email',
-    }
+    };
   }
 
   const { rows: duplicateEmail } = await db.query({
     text: `SELECT * FROM ${TABLE.USER} WHERE email = $1`,
     values: [email],
-  })
+  });
 
   if (duplicateEmail.length > 0) {
     return {
       error: true,
       message: 'email already exist',
-    }
+    };
   }
 
   // name validation
@@ -45,7 +45,7 @@ const validateSignUpField = async (email, name, password) => {
     return {
       error: true,
       message: 'name length must be greater than five (2) characters',
-    }
+    };
   }
 
   // password validation
@@ -53,18 +53,18 @@ const validateSignUpField = async (email, name, password) => {
     return {
       error: true,
       message: 'password character must be greater than five (5) characters',
-    }
+    };
   }
 
-  return { error: false }
-}
+  return { error: false };
+};
 
 const validateTokenSignIn = async (userId) => {
   // checking existing refresh token
   const { rows: existingToken } = await db.query({
     text: `SELECT id FROM ${TABLE.TOKEN} WHERE user_id = $1`,
     values: [userId],
-  })
+  });
 
   if (existingToken.length === JSON.parse(process.env.USER_SESSION_LIMIT)) {
     // delete oldest token if new user sign in (already reach max user session limit)
@@ -79,13 +79,13 @@ const validateTokenSignIn = async (userId) => {
       ) 
     `,
       values: [userId],
-    })
+    });
   }
-}
+};
 
 module.exports = {
   hashingPassword,
   generateToken,
   validateSignUpField,
   validateTokenSignIn,
-}
+};
