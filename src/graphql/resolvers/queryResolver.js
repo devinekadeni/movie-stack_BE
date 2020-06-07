@@ -1,4 +1,5 @@
-const axios = require('axios').default;
+const chalk = require('chalk');
+const TmdbAPI = require('../../utils/TmdbAPI');
 const { movieFormatter } = require('./query.utils');
 
 const query = {
@@ -9,6 +10,7 @@ const query = {
         page,
       };
 
+      // populate filters if any
       const { genres, ratingMin, ratingMax, releaseDateMin, releaseDateMax } = filters;
 
       if (genres && genres.length) {
@@ -31,13 +33,9 @@ const query = {
         params['primary_release_date.lte'] = releaseDateMax;
       }
 
-      const { data } = await axios({
+      const { data } = await TmdbAPI({
         method: 'get',
-        baseURL: process.env.TMDB_BASE_URL,
         url: '/discover/movie',
-        headers: {
-          Authorization: `Bearer ${process.env.TOKEN_TMDB}`,
-        },
         params,
       });
 
@@ -49,6 +47,7 @@ const query = {
         movies: movieFormatter(data.results),
       };
     } catch (error) {
+      console.log(chalk.red('error query: popularMovies', error));
       return error;
     }
   },
