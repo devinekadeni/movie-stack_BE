@@ -47,21 +47,25 @@ const query = {
         movies: movieFormatter(data.results),
       };
     } catch (error) {
-      console.log(chalk.red('error query: popularMovies', error));
+      console.log(chalk.red('Error Query: popularMovies', error));
       return error;
     }
   },
-  genreList() {
-    return [
-      {
-        id: '1',
-        name: 'action',
-      },
-      {
-        id: '2',
-        name: 'mystery',
-      },
-    ];
+  async genreList() {
+    try {
+      const { data } = await TmdbAPI({
+        method: 'get',
+        url: '/genre/movie/list',
+        params: {
+          language: 'en-US',
+        },
+      });
+
+      return data.genres;
+    } catch (error) {
+      console.log(chalk.red('Error Query: genreList', error));
+      return error;
+    }
   },
 };
 
