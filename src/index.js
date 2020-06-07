@@ -1,8 +1,8 @@
 require('dotenv').config();
 const express = require('express');
-const morgan = require('morgan');
 const helmet = require('helmet');
 const initializeRoute = require('./routes');
+const initializeLogging = require('./utils/logging');
 const { ApolloServer } = require('apollo-server-express');
 const { typeDefs, resolvers } = require('./graphql');
 
@@ -10,7 +10,8 @@ const app = express();
 
 app.use(express.json());
 app.use(helmet());
-app.use(morgan('dev'));
+
+initializeLogging(app);
 initializeRoute(app);
 
 const server = new ApolloServer({
