@@ -12,7 +12,7 @@ const movieType = gql`
     releaseDate: String
   }
 
-  type PopularMovies implements queryPagination {
+  type PopularMovies implements QueryPagination {
     totalResult: Int!
     currentPage: Int!
     totalPage: Int!

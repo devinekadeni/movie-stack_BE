@@ -1,7 +1,7 @@
 const { gql } = require('apollo-server-express');
 
 const responseInterface = gql`
-  interface queryPagination {
+  interface QueryPagination {
     totalResult: Int!
     currentPage: Int!
     totalPage: Int!
