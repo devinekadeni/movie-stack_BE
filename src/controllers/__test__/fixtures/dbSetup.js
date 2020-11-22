@@ -4,15 +4,12 @@ async function setupInitialTable() {
   await db.query({
     text: `
     CREATE TABLE t_user (
-      user_id serial NOT NULL,
-      "name" varchar(50) NOT NULL,
+      user_id serial PRIMARY KEY,
+      "name" varchar(50) NOT NULL UNIQUE,
       "password" varchar NOT NULL,
-      email varchar(355) NOT NULL,
+      email varchar(355) NOT NULL UNIQUE,
       created_at timestamp NOT NULL DEFAULT now(),
-      updated_at timestamp NOT NULL DEFAULT now(),
-      CONSTRAINT t_user_email_key UNIQUE (email),
-      CONSTRAINT t_user_pkey PRIMARY KEY (user_id),
-      CONSTRAINT t_user_username_key UNIQUE (name)
+      updated_at timestamp NOT NULL DEFAULT now()
     )`,
   });
 
@@ -24,8 +21,9 @@ async function setupInitialTable() {
       refresh_token varchar NULL,
       created_at timestamp NOT NULL DEFAULT now(),
       updated_at timestamp NOT NULL DEFAULT now(),
-      CONSTRAINT t_refresh_token_pkey PRIMARY KEY (id, user_id),
-      CONSTRAINT t_refresh_token_user_id_fkey FOREIGN KEY (user_id) REFERENCES t_user(user_id)
+      PRIMARY KEY (id, user_id),
+      FOREIGN KEY (user_id)
+        REFERENCES t_user (user_id)
     )`,
   });
 }

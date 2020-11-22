@@ -109,7 +109,7 @@ async function SignIn(req, res) {
     user_id: userData[0].user_id.toString(),
   });
 
-  db.query({
+  await db.query({
     text: `INSERT INTO ${TABLE.TOKEN} (user_id, refresh_token) VALUES ($1, $2)`,
     values: [userData[0].user_id, refreshToken],
   });
