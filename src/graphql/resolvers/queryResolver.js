@@ -1,37 +1,26 @@
 const chalk = require('chalk');
+const fnsAdd = require('date-fns/add');
+const fnsFormat = require('date-fns/format');
+
 const TmdbAPI = require('../../utils/TmdbAPI');
-const { movieFormatter } = require('./query.utils');
+const { movieFormatter, isValidDate } = require('./query.utils');
 
 const query = {
-  async popularMovies(_, { page = 1, sortBy = 'popularity.desc', filters = {} }) {
+  async popularMovies(_, { page = 1, currentDate = '', countryId = 'ID' }) {
+    const today = isValidDate(currentDate) ? new Date(currentDate) : new Date();
+    const next4Month = fnsFormat(fnsAdd(today, { months: 4 }), 'yyyy-MM-dd');
+
     try {
       const params = {
-        sort_by: sortBy,
         page,
+        certification_country: countryId.toUpperCase(),
+        'release_date.lte': next4Month,
+        sort_by: 'popularity.desc',
+        'vote_average.gte': 0,
+        'vote_average.lte': 10,
+        'with_runtime.gte': 0,
+        'with_runtime.lte': 400,
       };
-
-      // populate filters if any
-      const { genres, ratingMin, ratingMax, releaseDateMin, releaseDateMax } = filters;
-
-      if (genres && genres.length) {
-        params.with_genres = genres.join('|');
-      }
-
-      if (ratingMin) {
-        params['vote_average.gte'] = ratingMin;
-      }
-
-      if (ratingMax) {
-        params['vote_average.lte'] = ratingMax;
-      }
-
-      if (releaseDateMin) {
-        params['primary_release_date.gte'] = releaseDateMin;
-      }
-
-      if (releaseDateMax) {
-        params['primary_release_date.lte'] = releaseDateMax;
-      }
 
       const { data } = await TmdbAPI({
         method: 'get',

@@ -13,6 +13,25 @@ function movieFormatter(movies) {
   }));
 }
 
+function isValidDate(date) {
+  const [year, month, day] = date.split('-');
+
+  if (year.length < 3) {
+    return false;
+  }
+
+  if (month > 12 || month === '00') {
+    return false;
+  }
+
+  if (day > 31 || day === '00') {
+    return false;
+  }
+
+  return true;
+}
+
 module.exports = {
   movieFormatter,
+  isValidDate,
 };

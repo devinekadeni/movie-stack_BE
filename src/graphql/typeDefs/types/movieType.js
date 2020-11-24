@@ -19,14 +19,6 @@ const movieType = gql`
     hasMore: Boolean!
     movies: [Movie]!
   }
-
-  input MovieFilters {
-    genres: [Int]!
-    ratingMin: Float
-    ratingMax: Float
-    releaseDateMin: String
-    releaseDateMax: String
-  }
 `;
 
 module.exports = movieType;
