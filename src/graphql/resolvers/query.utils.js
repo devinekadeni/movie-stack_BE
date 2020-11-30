@@ -1,3 +1,6 @@
+const fnsAdd = require('date-fns/add');
+const fnsFormat = require('date-fns/format');
+
 function movieFormatter(movies) {
   if (!movies.length) return [];
 
@@ -31,7 +34,36 @@ function isValidDate(date) {
   return true;
 }
 
+function generateMovieParam(movieType) {
+  const next4Month = fnsFormat(fnsAdd(new Date(), { months: 4 }), 'yyyy-MM-dd');
+  const next2Day = fnsFormat(fnsAdd(new Date(), { days: 2 }), 'yyyy-MM-dd');
+  const next3Week = fnsFormat(fnsAdd(new Date(), { weeks: 3, days: 2 }), 'yyyy-MM-dd');
+
+  const movieParam = {
+    POPULAR: {
+      'release_date.lte': next4Month,
+      sort_by: 'popularity.desc',
+      'vote_average.gte': 0,
+      'vote_average.lte': 10,
+      'with_runtime.gte': 0,
+      'with_runtime.lte': 400,
+    },
+    UPCOMING: {
+      'primary_release_date.gte': next2Day,
+      'primary_release_date.lte': next3Week,
+      sort_by: 'popularity.desc',
+      'vote_average.gte': 0,
+      'vote_average.lte': 10,
+      'with_runtime.gte': 0,
+      'with_runtime.lte': 400,
+    },
+  };
+
+  return movieParam[movieType];
+}
+
 module.exports = {
   movieFormatter,
   isValidDate,
+  generateMovieParam,
 };

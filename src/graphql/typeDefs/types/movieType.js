@@ -1,6 +1,13 @@
 const { gql } = require('apollo-server-express');
 
 const movieType = gql`
+  enum MovieType {
+    POPULAR
+    UPCOMING
+    NOW_PLAYING
+    TOP_RATED
+  }
+
   type Movie {
     id: ID!
     title: String!
@@ -12,7 +19,7 @@ const movieType = gql`
     releaseDate: String
   }
 
-  type PopularMovies implements QueryPagination {
+  type MovieList implements QueryPagination {
     totalResult: Int!
     currentPage: Int!
     totalPage: Int!

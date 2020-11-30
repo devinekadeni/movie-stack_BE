@@ -1,25 +1,15 @@
 const chalk = require('chalk');
-const fnsAdd = require('date-fns/add');
-const fnsFormat = require('date-fns/format');
 
 const TmdbAPI = require('../../utils/TmdbAPI');
-const { movieFormatter, isValidDate } = require('./query.utils');
+const { movieFormatter, generateMovieParam } = require('./query.utils');
 
 const query = {
-  async popularMovies(_, { page = 1, currentDate = '', countryId = 'ID' }) {
-    const today = isValidDate(currentDate) ? new Date(currentDate) : new Date();
-    const next4Month = fnsFormat(fnsAdd(today, { months: 4 }), 'yyyy-MM-dd');
-
+  async movieList(_, { page = 1, countryId = 'ID', movieType }) {
     try {
       const params = {
         page,
         certification_country: countryId.toUpperCase(),
-        'release_date.lte': next4Month,
-        sort_by: 'popularity.desc',
-        'vote_average.gte': 0,
-        'vote_average.lte': 10,
-        'with_runtime.gte': 0,
-        'with_runtime.lte': 400,
+        ...generateMovieParam(movieType),
       };
 
       const { data } = await TmdbAPI({
@@ -36,7 +26,7 @@ const query = {
         movies: movieFormatter(data.results),
       };
     } catch (error) {
-      console.log(chalk.red('Error Query: popularMovies', error));
+      console.log(chalk.red(`Error Query: ${movieType} Movies`, error));
       return error;
     }
   },

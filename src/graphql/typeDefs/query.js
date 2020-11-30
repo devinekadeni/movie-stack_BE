@@ -2,7 +2,7 @@ const { gql } = require('apollo-server-express');
 
 const queryType = gql`
   type Query {
-    popularMovies(page: Int, currentDate: String, countryId: String): PopularMovies!
+    movieList(page: Int!, countryId: String, movieType: MovieType!): MovieList!
     genreList: [Genre]!
   }
 `;
