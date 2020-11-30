@@ -1,4 +1,5 @@
 const fnsAdd = require('date-fns/add');
+const fnsSub = require('date-fns/sub');
 const fnsFormat = require('date-fns/format');
 
 function movieFormatter(movies) {
@@ -35,9 +36,14 @@ function isValidDate(date) {
 }
 
 function generateMovieParam(movieType) {
+  const today = fnsFormat(new Date(), 'yyyy-MM-dd');
   const next4Month = fnsFormat(fnsAdd(new Date(), { months: 4 }), 'yyyy-MM-dd');
   const next2Day = fnsFormat(fnsAdd(new Date(), { days: 2 }), 'yyyy-MM-dd');
   const next3Week = fnsFormat(fnsAdd(new Date(), { weeks: 3, days: 2 }), 'yyyy-MM-dd');
+  const lastMonth1Week = fnsFormat(
+    fnsSub(new Date(), { months: 1, weeks: 1 }),
+    'yyyy-MM-dd'
+  );
 
   const movieParam = {
     POPULAR: {
@@ -51,6 +57,15 @@ function generateMovieParam(movieType) {
     UPCOMING: {
       'primary_release_date.gte': next2Day,
       'primary_release_date.lte': next3Week,
+      sort_by: 'popularity.desc',
+      'vote_average.gte': 0,
+      'vote_average.lte': 10,
+      'with_runtime.gte': 0,
+      'with_runtime.lte': 400,
+    },
+    NOW_PLAYING: {
+      'primary_release_date.gte': lastMonth1Week,
+      'primary_release_date.lte': today,
       sort_by: 'popularity.desc',
       'vote_average.gte': 0,
       'vote_average.lte': 10,
