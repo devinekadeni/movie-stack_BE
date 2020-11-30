@@ -57,6 +57,15 @@ function generateMovieParam(movieType) {
       'with_runtime.gte': 0,
       'with_runtime.lte': 400,
     },
+    TOP_RATED: {
+      'release_date.lte': next4Month,
+      sort_by: 'vote_average.desc',
+      'vote_average.gte': 0,
+      'vote_average.lte': 10,
+      'vote_count.gte': 300,
+      'with_runtime.gte': 0,
+      'with_runtime.lte': 400,
+    },
   };
 
   return movieParam[movieType];
