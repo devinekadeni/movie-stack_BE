@@ -26,6 +26,18 @@ const movieType = gql`
     hasMore: Boolean!
     movies: [Movie]!
   }
+
+  type PopularTrailerList {
+    id: ID!
+    title: String!
+    poster: String
+    backdrop: String
+    genres: [String]
+    rating: Float
+    summary: String
+    releaseDate: String
+    url: String
+  }
 `;
 
 module.exports = movieType;

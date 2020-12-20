@@ -46,6 +46,54 @@ const query = {
       return error;
     }
   },
+  async popularTrailerList(_, { countryId = 'ID' }) {
+    try {
+      // Get popular movies
+      const params = {
+        page: 1,
+        certification_country: countryId.toUpperCase(),
+        ...generateMovieParam('POPULAR'),
+      };
+
+      const { data } = await TmdbAPI({
+        method: 'get',
+        url: '/discover/movie',
+        params,
+      });
+
+      // Get popular movies' trailer
+      const promiseArr = movieFormatter(data.results).map(async (movieData) => {
+        const { data: movieTrailer } = await TmdbAPI({
+          method: 'get',
+          url: `/movie/${movieData.id}/videos`,
+          params,
+        });
+
+        const youtubeTrailer =
+          movieTrailer.results.length > 0
+            ? movieTrailer.results.find(
+                (val) => val.type === 'Trailer' && val.site === 'YouTube'
+              )
+            : null;
+
+        const url = youtubeTrailer
+          ? `https://www.youtube.com/watch?v=${youtubeTrailer.key}`
+          : '';
+
+        return {
+          ...movieData,
+          url,
+        };
+      });
+
+      const result = await Promise.all(promiseArr);
+
+      return result;
+    } catch (error) {
+      console.log(chalk.red(`Error Query: Random trailer list`, error));
+      return error;
+    }
+  },
 };
 
 module.exports = query;

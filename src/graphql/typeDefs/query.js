@@ -4,6 +4,7 @@ const queryType = gql`
   type Query {
     movieList(page: Int!, countryId: String, movieType: MovieType!): MovieList!
     genreList: [Genre]!
+    popularTrailerList: [PopularTrailerList]!
   }
 `;
 
