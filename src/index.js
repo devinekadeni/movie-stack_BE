@@ -6,10 +6,15 @@ const initializeLogging = require('./utils/logging');
 const { ApolloServer } = require('apollo-server-express');
 const { typeDefs, resolvers } = require('./graphql');
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const app = express();
 
 app.use(express.json());
-app.use(helmet());
+
+if (isProd) {
+  app.use(helmet());
+}
 
 initializeLogging(app);
 initializeRoute(app);
