@@ -9,14 +9,16 @@ const movieType = gql`
   }
 
   type Movie {
-    id: ID!
-    title: String!
+    id: ID
+    title: String
     poster: String
     backdrop: String
-    genres: [String]
+    genres: [Genre]!
+    genreIds: [String]!
     rating: Float
     summary: String
     releaseDate: String
+    duration: Int
   }
 
   type MovieList implements QueryPagination {
@@ -37,6 +39,11 @@ const movieType = gql`
     summary: String
     releaseDate: String
     url: String
+  }
+
+  type MovieDetail {
+    movie: Movie
+    castList: [Cast]!
   }
 `;
 
