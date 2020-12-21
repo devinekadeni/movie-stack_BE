@@ -2,19 +2,29 @@ const fnsAdd = require('date-fns/add');
 const fnsSub = require('date-fns/sub');
 const fnsFormat = require('date-fns/format');
 
-function movieFormatter(movies) {
-  if (!movies.length) return [];
-
-  return movies.map((movie) => ({
+function movieFormatter(movie) {
+  return {
     id: movie.id,
     title: movie.title,
     poster: movie.poster_path,
     backdrop: movie.backdrop_path,
-    genres: movie.genre_ids,
+    genreIds: movie.genre_ids || [],
+    genres: movie.genres || [],
     rating: movie.vote_average,
     summary: movie.overview,
     releaseDate: movie.release_date,
-  }));
+    duration: movie.duration || null,
+  };
+}
+
+function castFormatter(cast) {
+  return {
+    id: cast.id,
+    name: cast.name,
+    photo: cast.profile_path,
+    character: cast.character,
+    order: cast.order,
+  };
 }
 
 function isValidDate(date) {
@@ -90,4 +100,5 @@ module.exports = {
   movieFormatter,
   isValidDate,
   generateMovieParam,
+  castFormatter,
 };

@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 
 const TmdbAPI = require('../../utils/TmdbAPI');
-const { movieFormatter, generateMovieParam } = require('./query.utils');
+const { movieFormatter, generateMovieParam, castFormatter } = require('./query.utils');
 
 const query = {
   async movieList(_, { page = 1, countryId = 'ID', movieType }) {
@@ -23,7 +23,7 @@ const query = {
         currentPage: data.page,
         totalPage: data.total_pages,
         hasMore: data.page !== data.total_pages,
-        movies: movieFormatter(data.results),
+        movies: data.results.map((movie) => movieFormatter(movie)),
       };
     } catch (error) {
       console.log(chalk.red(`Error Query: ${movieType} Movies`, error));
@@ -62,10 +62,11 @@ const query = {
       });
 
       // Get popular movies' trailer
-      const promiseArr = movieFormatter(data.results).map(async (movieData) => {
+      const promiseArr = data.results.map(async (movieData) => {
+        const formattedMovie = movieFormatter(movieData);
         const { data: movieTrailer } = await TmdbAPI({
           method: 'get',
-          url: `/movie/${movieData.id}/videos`,
+          url: `/movie/${formattedMovie.id}/videos`,
           params,
         });
 
@@ -81,7 +82,7 @@ const query = {
           : '';
 
         return {
-          ...movieData,
+          ...formattedMovie,
           url,
         };
       });
@@ -92,6 +93,39 @@ const query = {
     } catch (error) {
       console.log(chalk.red(`Error Query: Random trailer list`, error));
       return error;
+    }
+  },
+  async movieDetail(_, { id }) {
+    try {
+      const getMovieDetail = TmdbAPI({
+        method: 'get',
+        url: `/movie/${id}`,
+      });
+
+      const getCastList = TmdbAPI({
+        method: 'get',
+        url: `/movie/${id}/credits`,
+      });
+
+      const [resultMovie, resultCastList] = await Promise.all([
+        getMovieDetail,
+        getCastList,
+      ]);
+
+      const formattedMovie = movieFormatter(resultMovie.data);
+      const formattedCastList = resultCastList.data.cast.length
+        ? resultCastList.data.cast.map((cast) => castFormatter(cast))
+        : [];
+
+      return {
+        movie: formattedMovie,
+        castList: formattedCastList,
+      };
+    } catch (error) {
+      return {
+        movie: {},
+        castList: [],
+      };
     }
   },
 };
