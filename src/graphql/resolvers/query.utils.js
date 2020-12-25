@@ -13,7 +13,7 @@ function movieFormatter(movie) {
     rating: movie.vote_average,
     summary: movie.overview,
     releaseDate: movie.release_date,
-    duration: movie.duration || null,
+    duration: movie.runtime || null,
   };
 }
 
