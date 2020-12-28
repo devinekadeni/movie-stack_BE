@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const logText = (responseTime, operationName, variables, query) => {
   return `${chalk.cyan('GraphQL:')} on ${responseTime}ms
   Operation Name: ${operationName}
-  Variables: ${variables}
+  Variables: ${JSON.stringify(variables)}
   Query: ${query}`;
 };
 
