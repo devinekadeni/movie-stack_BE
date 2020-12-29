@@ -45,6 +45,23 @@ const movieType = gql`
     movie: Movie
     castList: [Cast]!
   }
+
+  type Trailer {
+    id: ID!
+    url: String!
+    name: String!
+  }
+
+  type Backdrop {
+    filePath: String!
+    voteAvg: Float
+  }
+
+  type MovieMedia {
+    movieId: ID!
+    trailers: [Trailer]!
+    backdrops: [Backdrop]
+  }
 `;
 
 module.exports = movieType;
