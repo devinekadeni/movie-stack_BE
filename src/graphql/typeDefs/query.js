@@ -6,6 +6,7 @@ const queryType = gql`
     genreList: [Genre]!
     popularTrailerList: [PopularTrailerList]!
     movieDetail(id: ID!): MovieDetail
+    movieMedia(id: ID!): MovieMedia
   }
 `;
 

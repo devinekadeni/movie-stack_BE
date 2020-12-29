@@ -1,7 +1,13 @@
 const chalk = require('chalk');
 
 const TmdbAPI = require('../../utils/TmdbAPI');
-const { movieFormatter, generateMovieParam, castFormatter } = require('./query.utils');
+const {
+  movieFormatter,
+  generateMovieParam,
+  castFormatter,
+  trailerFormatter,
+  backdropFormatter,
+} = require('./query.utils');
 
 const query = {
   async movieList(_, { page = 1, countryId = 'ID', movieType }) {
@@ -125,6 +131,37 @@ const query = {
       return {
         movie: {},
         castList: [],
+      };
+    }
+  },
+  async movieMedia(_, { id }) {
+    try {
+      const getMovieTrailers = TmdbAPI({ method: 'get', url: `/movie/${id}/videos` });
+      const getMovieBackdrops = TmdbAPI({ method: 'get', url: `/movie/${id}/images` });
+
+      const [movieTrailers, movieBackdrops] = await Promise.all([
+        getMovieTrailers,
+        getMovieBackdrops,
+      ]);
+
+      const formattedTrailers = movieTrailers.data.results
+        .filter((trailer) => trailer.type === 'Trailer' && trailer.site === 'YouTube')
+        .map(trailerFormatter);
+
+      const formattedBackdrops = movieBackdrops.data.backdrops.map(backdropFormatter);
+
+      return {
+        movieId: id,
+        trailers: formattedTrailers,
+        backdrops: formattedBackdrops,
+      };
+    } catch (error) {
+      console.log(chalk.red(`GraphQL query: movieMedia(id: ${id})`), error);
+
+      return {
+        movieId: id,
+        trailers: [],
+        backdrops: [],
       };
     }
   },

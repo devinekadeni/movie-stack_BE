@@ -27,6 +27,21 @@ function castFormatter(cast) {
   };
 }
 
+function trailerFormatter(trailer) {
+  return {
+    id: trailer.id,
+    url: `https://www.youtube.com/watch?v=${trailer.key}`,
+    name: trailer.name,
+  };
+}
+
+function backdropFormatter(backdrop) {
+  return {
+    filePath: backdrop.file_path,
+    voteAvg: backdrop.vote_average,
+  };
+}
+
 function isValidDate(date) {
   const [year, month, day] = date.split('-');
 
@@ -101,4 +116,6 @@ module.exports = {
   isValidDate,
   generateMovieParam,
   castFormatter,
+  trailerFormatter,
+  backdropFormatter,
 };
