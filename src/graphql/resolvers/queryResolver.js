@@ -32,7 +32,7 @@ const query = {
         movies: data.results.map((movie) => movieFormatter(movie)),
       };
     } catch (error) {
-      console.log(chalk.red(`Error Query: ${movieType} Movies`, error));
+      console.log(chalk.red(`GraphQL query: movieList(page: ${page})`), error);
       return error;
     }
   },
@@ -48,7 +48,7 @@ const query = {
 
       return data.genres;
     } catch (error) {
-      console.log(chalk.red('Error Query: genreList', error));
+      console.log(chalk.red('GraphQL query: genreList'), error);
       return error;
     }
   },
@@ -97,7 +97,7 @@ const query = {
 
       return result;
     } catch (error) {
-      console.log(chalk.red(`Error Query: Random trailer list`, error));
+      console.log(chalk.red('GraphQL query: popularTrailerList'), error);
       return error;
     }
   },
@@ -128,6 +128,8 @@ const query = {
         castList: formattedCastList,
       };
     } catch (error) {
+      console.log(chalk.red(`GraphQL query: movieDetail(id: ${id})`), error);
+
       return {
         movie: {},
         castList: [],
