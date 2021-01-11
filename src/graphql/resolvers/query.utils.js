@@ -72,7 +72,7 @@ function generateMovieParam(movieType) {
 
   const movieParam = {
     POPULAR: {
-      'release_date.lte': next4Month,
+      'primary_release_date.lte': next4Month,
       sort_by: 'popularity.desc',
       'vote_average.gte': 0,
       'vote_average.lte': 10,
@@ -98,7 +98,7 @@ function generateMovieParam(movieType) {
       'with_runtime.lte': 400,
     },
     TOP_RATED: {
-      'release_date.lte': next4Month,
+      'primary_release_date.lte': next4Month,
       sort_by: 'vote_average.desc',
       'vote_average.gte': 0,
       'vote_average.lte': 10,

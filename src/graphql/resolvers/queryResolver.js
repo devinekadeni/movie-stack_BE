@@ -10,11 +10,10 @@ const {
 } = require('./query.utils');
 
 const query = {
-  async movieList(_, { page = 1, countryId = 'ID', movieType }) {
+  async movieList(_, { page = 1, movieType }) {
     try {
       const params = {
         page,
-        certification_country: countryId.toUpperCase(),
         ...generateMovieParam(movieType),
       };
 
