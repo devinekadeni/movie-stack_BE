@@ -1,10 +1,10 @@
-require('dotenv').config();
-const express = require('express');
-const helmet = require('helmet');
-const initializeRoute = require('./routes');
-const initializeLogging = require('./utils/logging');
-const { ApolloServer } = require('apollo-server-express');
-const { typeDefs, resolvers } = require('./graphql');
+import 'dotenv/config';
+import express from 'express';
+import helmet from 'helmet';
+import initializeRoute from './routes';
+import initializeLogging from './utils/logging';
+import { ApolloServer } from 'apollo-server-express';
+import { typeDefs, resolvers } from './graphql';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -26,4 +26,4 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app, path: '/graphql' });
 
-module.exports = app;
+export default app;

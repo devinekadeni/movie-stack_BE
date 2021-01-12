@@ -1,13 +1,13 @@
-const chalk = require('chalk');
-const { Pool } = require('pg');
-const { devConfig, testConfig } = require('./config');
+import chalk from 'chalk';
+import { Pool } from 'pg';
+import { devConfig, testConfig } from './config';
 
 const log = process.env.NODE_ENV === 'test' ? () => {} : console.log;
 const config = process.env.NODE_ENV === 'test' ? testConfig : devConfig;
 
 const pool = new Pool(config);
 
-module.exports = {
+const postgresqlInstance = {
   query: async (query) => {
     try {
       const start = Date.now();
@@ -25,3 +25,5 @@ module.exports = {
   },
   closeConnection: () => pool.end(), // for testing needs
 };
+
+export default postgresqlInstance;

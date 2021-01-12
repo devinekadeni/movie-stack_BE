@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
+    "dev": "nodemon --exec babel-node src/server.js",
     "test": "jest --detectOpenHandles",
     "test:watch": "jest --watch",
     "prettify": "prettier --config ./.prettierrc --write \"./**/*.{js,jsx,css,scss}\""
@@ -31,6 +31,9 @@
     "validator": "^13.5.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
     "@types/jest": "^26.0.19",
     "cross-env": "^7.0.3",
     "eslint": "^7.17.0",

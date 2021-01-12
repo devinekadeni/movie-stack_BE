@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
 const movieType = gql`
   enum MovieType {
@@ -64,4 +64,4 @@ const movieType = gql`
   }
 `;
 
-module.exports = movieType;
+export default movieType;

@@ -1,11 +1,11 @@
-const request = require('supertest');
-const jwt = require('jsonwebtoken');
-const app = require('../../index');
-const db = require('../../db/Postgresql');
-const { statusCode } = require('../../utils/response');
-const TABLE = require('../../db/tableName');
-const { hashingPassword } = require('../User/User.helper');
-const { setupInitialTable, clearTable } = require('./fixtures/dbSetup');
+import request from 'supertest';
+import jwt from 'jsonwebtoken';
+import app from '../../index';
+import db from '../../db/Postgresql';
+import { statusCode } from '../../utils/response';
+import TABLE from '../../db/tableName';
+import { hashingPassword } from '../User/User.helper';
+import { setupInitialTable, clearTable } from './fixtures/dbSetup';
 
 beforeAll(async () => {
   await setupInitialTable();

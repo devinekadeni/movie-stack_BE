@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const { statusCode, errorCode } = require('../utils/response');
+import jwt from 'jsonwebtoken';
+import { statusCode, errorCode } from '../utils/response';
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -16,4 +16,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

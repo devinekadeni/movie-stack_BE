@@ -3,4 +3,4 @@ const TABLE_NAME = {
   TOKEN: 't_refresh_token',
 };
 
-module.exports = TABLE_NAME;
+export default TABLE_NAME;

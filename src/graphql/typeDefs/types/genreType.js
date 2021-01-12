@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
 const genreType = gql`
   type Genre {
@@ -7,4 +7,4 @@ const genreType = gql`
   }
 `;
 
-module.exports = genreType;
+export default genreType;

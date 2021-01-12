@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
 const responseInterface = gql`
   interface QueryPagination {
@@ -9,4 +9,4 @@ const responseInterface = gql`
   }
 `;
 
-module.exports = responseInterface;
+export default responseInterface;

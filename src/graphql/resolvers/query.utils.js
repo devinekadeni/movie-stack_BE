@@ -1,8 +1,8 @@
-const fnsAdd = require('date-fns/add');
-const fnsSub = require('date-fns/sub');
-const fnsFormat = require('date-fns/format');
+import fnsAdd from 'date-fns/add';
+import fnsSub from 'date-fns/sub';
+import fnsFormat from 'date-fns/format';
 
-function movieFormatter(movie) {
+export function movieFormatter(movie) {
   return {
     id: movie.id,
     title: movie.title,
@@ -17,7 +17,7 @@ function movieFormatter(movie) {
   };
 }
 
-function castFormatter(cast) {
+export function castFormatter(cast) {
   return {
     id: cast.id,
     name: cast.name,
@@ -27,7 +27,7 @@ function castFormatter(cast) {
   };
 }
 
-function trailerFormatter(trailer) {
+export function trailerFormatter(trailer) {
   return {
     id: trailer.id,
     url: `https://www.youtube.com/watch?v=${trailer.key}`,
@@ -35,14 +35,14 @@ function trailerFormatter(trailer) {
   };
 }
 
-function backdropFormatter(backdrop) {
+export function backdropFormatter(backdrop) {
   return {
     filePath: backdrop.file_path,
     voteAvg: backdrop.vote_average,
   };
 }
 
-function isValidDate(date) {
+export function isValidDate(date) {
   const [year, month, day] = date.split('-');
 
   if (year.length < 3) {
@@ -60,7 +60,7 @@ function isValidDate(date) {
   return true;
 }
 
-function generateMovieParam(movieType) {
+export function generateMovieParam(movieType) {
   const today = fnsFormat(new Date(), 'yyyy-MM-dd');
   const next4Month = fnsFormat(fnsAdd(new Date(), { months: 4 }), 'yyyy-MM-dd');
   const next2Day = fnsFormat(fnsAdd(new Date(), { days: 2 }), 'yyyy-MM-dd');
@@ -110,12 +110,3 @@ function generateMovieParam(movieType) {
 
   return movieParam[movieType];
 }
-
-module.exports = {
-  movieFormatter,
-  isValidDate,
-  generateMovieParam,
-  castFormatter,
-  trailerFormatter,
-  backdropFormatter,
-};

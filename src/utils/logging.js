@@ -1,5 +1,5 @@
-const morgan = require('morgan');
-const chalk = require('chalk');
+import morgan from 'morgan';
+import chalk from 'chalk';
 
 const logText = (responseTime, operationName, variables, query) => {
   return `${chalk.cyan('GraphQL:')} on ${responseTime}ms
@@ -38,4 +38,4 @@ function initializeLogging(app) {
   );
 }
 
-module.exports = initializeLogging;
+export default initializeLogging;

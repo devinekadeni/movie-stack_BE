@@ -1,7 +1,7 @@
-const movieType = require('./movieType');
-const genreType = require('./genreType');
-const castType = require('./castType');
+import movieType from './movieType';
+import genreType from './genreType';
+import castType from './castType';
 
 const types = [movieType, genreType, castType];
 
-module.exports = types;
+export default types;

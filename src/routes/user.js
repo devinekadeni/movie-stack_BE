@@ -1,10 +1,10 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   SignUp,
   SignIn,
   SignOut,
   RefreshToken,
-} = require('../controllers/User/UserController');
+} from '../controllers/User/UserController';
 
 const router = express.Router();
 
@@ -13,4 +13,4 @@ router.post('/signin', SignIn);
 router.post('/signout', SignOut);
 router.post('/refresh_token', RefreshToken);
 
-module.exports = router;
+export default router;

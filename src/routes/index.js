@@ -1,7 +1,7 @@
-const userRoute = require('./user');
+import userRoute from './user';
 
 const initializeRoutes = (app) => {
   app.use('/user', userRoute);
 };
 
-module.exports = initializeRoutes;
+export default initializeRoutes;

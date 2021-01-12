@@ -1,13 +1,13 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
-const TmdbAPI = require('../../utils/TmdbAPI');
-const {
+import TmdbAPI from '../../utils/TmdbAPI';
+import {
   movieFormatter,
   generateMovieParam,
   castFormatter,
   trailerFormatter,
   backdropFormatter,
-} = require('./query.utils');
+} from './query.utils';
 
 const query = {
   async movieList(_, { page = 1, movieType }) {
@@ -168,4 +168,4 @@ const query = {
   },
 };
 
-module.exports = query;
+export default query;

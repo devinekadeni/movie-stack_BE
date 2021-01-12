@@ -1,21 +1,21 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const TABLE = require('../../db/tableName');
-const db = require('../../db/Postgresql');
-const {
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import TABLE from '../../db/tableName';
+import db from '../../db/Postgresql';
+import {
   hashingPassword,
   generateToken,
   validateSignUpField,
   validateTokenSignIn,
-} = require('./User.helper');
-const {
+} from './User.helper';
+import {
   responseError,
   responseSuccess,
   statusCode,
   errorCode,
-} = require('../../utils/response');
+} from '../../utils/response';
 
-async function SignUp(req, res) {
+export async function SignUp(req, res) {
   const { name, email, password } = req.body;
 
   const validation = await validateSignUpField(email, name, password);
@@ -71,7 +71,7 @@ async function SignUp(req, res) {
   }
 }
 
-async function SignIn(req, res) {
+export async function SignIn(req, res) {
   const { email, password } = req.body;
 
   const { rows: userData } = await db.query({
@@ -123,7 +123,7 @@ async function SignIn(req, res) {
   );
 }
 
-async function SignOut(req, res) {
+export async function SignOut(req, res) {
   const refreshToken = req.body.refresh_token;
 
   try {
@@ -147,7 +147,7 @@ async function SignOut(req, res) {
   );
 }
 
-async function RefreshToken(req, res) {
+export async function RefreshToken(req, res) {
   const { refreshToken } = req.body;
 
   try {
@@ -180,10 +180,3 @@ async function RefreshToken(req, res) {
     });
   }
 }
-
-module.exports = {
-  SignUp,
-  SignIn,
-  SignOut,
-  RefreshToken,
-};

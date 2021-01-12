@@ -1,5 +1,5 @@
-const responseInterface = require('./responseInterface');
+import responseInterface from './responseInterface';
 
 const interfaces = [responseInterface];
 
-module.exports = interfaces;
+export default interfaces;

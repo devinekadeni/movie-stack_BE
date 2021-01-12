@@ -1,6 +1,6 @@
-const db = require('../../../db/Postgresql');
+import db from '../../../db/Postgresql';
 
-async function setupInitialTable() {
+export async function setupInitialTable() {
   await db.query({
     text: `
     CREATE TABLE t_user (
@@ -28,9 +28,7 @@ async function setupInitialTable() {
   });
 }
 
-async function clearTable() {
+export async function clearTable() {
   await db.query({ text: `DROP TABLE t_refresh_token` });
   await db.query({ text: `DROP TABLE t_user` });
 }
-
-module.exports = { setupInitialTable, clearTable };

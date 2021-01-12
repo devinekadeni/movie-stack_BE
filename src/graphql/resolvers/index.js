@@ -1,4 +1,4 @@
-const Query = require('./queryResolver');
+import Query from './queryResolver';
 
 const resolvers = {
   Query,
@@ -11,4 +11,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;

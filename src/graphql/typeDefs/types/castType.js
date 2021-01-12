@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
 const castType = gql`
   type Cast {
@@ -10,4 +10,4 @@ const castType = gql`
   }
 `;
 
-module.exports = castType;
+export default castType;

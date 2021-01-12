@@ -1,17 +1,17 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { isEmail } = require('validator').default;
-const db = require('../../db/Postgresql');
-const TABLE = require('../../db/tableName');
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import isEmail from 'validator/lib/isEmail';
+import db from '../../db/Postgresql';
+import TABLE from '../../db/tableName';
 
-const hashingPassword = async (password) => {
+export const hashingPassword = async (password) => {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   return hashedPassword;
 };
 
-const generateToken = (type, data) => {
+export const generateToken = (type, data) => {
   if (type === 'refresh') {
     return jwt.sign(data, process.env.REFRESH_SECRET, { expiresIn: '7 days' });
   } else if (type === 'access') {
@@ -19,7 +19,7 @@ const generateToken = (type, data) => {
   }
 };
 
-const validateSignUpField = async (email, name, password) => {
+export const validateSignUpField = async (email, name, password) => {
   // email validation
   if (!isEmail(email)) {
     return {
@@ -59,7 +59,7 @@ const validateSignUpField = async (email, name, password) => {
   return { error: false };
 };
 
-const validateTokenSignIn = async (userId) => {
+export const validateTokenSignIn = async (userId) => {
   // checking existing refresh token
   const { rows: existingToken } = await db.query({
     text: `SELECT id FROM ${TABLE.TOKEN} WHERE user_id = $1`,
@@ -81,11 +81,4 @@ const validateTokenSignIn = async (userId) => {
       values: [userId],
     });
   }
-};
-
-module.exports = {
-  hashingPassword,
-  generateToken,
-  validateSignUpField,
-  validateTokenSignIn,
 };
