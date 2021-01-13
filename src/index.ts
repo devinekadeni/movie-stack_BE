@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Application } from 'express';
 import helmet from 'helmet';
 import initializeRoute from './routes';
 import initializeLogging from './utils/logging';
@@ -8,7 +8,7 @@ import { typeDefs, resolvers } from './graphql';
 
 const isProd = process.env.NODE_ENV === 'production';
 
-const app = express();
+const app: Application = express();
 
 app.use(express.json());
 
