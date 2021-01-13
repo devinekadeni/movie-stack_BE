@@ -166,6 +166,66 @@ const query = {
       };
     }
   },
+  async searchMovies(
+    _,
+    { page = 1, searchParams = { filter: {}, sortBy: 'popularity.desc' } }
+  ) {
+    try {
+      const mapFilterKeyTMDB = {
+        releaseDateStart: 'primary_release_date.gte',
+        releaseDateEnd: 'primary_release_date.lte',
+        witghGenres: 'with_genres',
+        ratingStart: 'vote_average.gte',
+        ratingEnd: 'vote_average.lte',
+      };
+
+      let params = {
+        page,
+        sort_by: searchParams.sortBy,
+        'primary_release_date.gte': '',
+        'primary_release_date.lte': '',
+        with_genres: '',
+        'vote_average.gte': 0,
+        'vote_average.lte': 10,
+        'with_runtime.gte': 0,
+        'with_runtime,lte': 400,
+      };
+
+      if (Object.keys(searchParams.filter).length) {
+        const newParam = Object.entries(searchParams.filter).reduce((acc, val) => {
+          const [filterKey, filterValue] = val;
+
+          if (filterValue || filterValue === 0) {
+            return {
+              ...acc,
+              [mapFilterKeyTMDB[filterKey]]: filterValue,
+            };
+          }
+
+          return acc;
+        }, {});
+
+        params = { ...params, ...newParam };
+      }
+
+      const { data } = await TmdbAPI({
+        method: 'get',
+        url: '/discover/movie',
+        params,
+      });
+
+      return {
+        totalResult: data.total_results,
+        currentPage: data.page,
+        totalPage: data.total_pages,
+        hasMore: data.page !== data.total_pages,
+        movies: data.results.map((movie) => movieFormatter(movie)),
+      };
+    } catch (error) {
+      console.log(chalk.red(`GraphQL query: movieList(page: ${page})`), error);
+      return error;
+    }
+  },
 };
 
 export default query;
