@@ -1,4 +1,4 @@
-import db from '../../../db/Postgresql';
+import db from '../../../db/Postgresql'
 
 export async function setupInitialTable() {
   await db.query({
@@ -11,7 +11,7 @@ export async function setupInitialTable() {
       created_at timestamp NOT NULL DEFAULT now(),
       updated_at timestamp NOT NULL DEFAULT now()
     )`,
-  });
+  })
 
   await db.query({
     text: `
@@ -25,10 +25,10 @@ export async function setupInitialTable() {
       FOREIGN KEY (user_id)
         REFERENCES t_user (user_id)
     )`,
-  });
+  })
 }
 
 export async function clearTable() {
-  await db.query({ text: `DROP TABLE t_refresh_token` });
-  await db.query({ text: `DROP TABLE t_user` });
+  await db.query({ text: `DROP TABLE t_refresh_token` })
+  await db.query({ text: `DROP TABLE t_user` })
 }

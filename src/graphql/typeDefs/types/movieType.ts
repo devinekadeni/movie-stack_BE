@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-express';
+import { gql } from 'apollo-server-express'
 
 const movieType = gql`
   enum MovieType {
@@ -62,6 +62,6 @@ const movieType = gql`
     trailers: [Trailer]!
     backdrops: [Backdrop]
   }
-`;
+`
 
-export default movieType;
+export default movieType

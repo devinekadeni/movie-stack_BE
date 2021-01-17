@@ -1,29 +1,29 @@
-import 'dotenv/config';
-import express from 'express';
-import helmet from 'helmet';
-import initializeRoute from './routes';
-import initializeLogging from './utils/logging';
-import { ApolloServer } from 'apollo-server-express';
-import { typeDefs, resolvers } from './graphql';
+import 'dotenv/config'
+import express from 'express'
+import helmet from 'helmet'
+import initializeRoute from './routes'
+import initializeLogging from './utils/logging'
+import { ApolloServer } from 'apollo-server-express'
+import { typeDefs, resolvers } from './graphql'
 
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV === 'production'
 
-const app = express();
+const app = express()
 
-app.use(express.json());
+app.use(express.json())
 
 if (isProd) {
-  app.use(helmet());
+  app.use(helmet())
 }
 
-initializeLogging(app);
-initializeRoute(app);
+initializeLogging(app)
+initializeRoute(app)
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-});
+})
 
-server.applyMiddleware({ app, path: '/graphql' });
+server.applyMiddleware({ app, path: '/graphql' })
 
-export default app;
+export default app

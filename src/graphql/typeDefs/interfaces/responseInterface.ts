@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-express';
+import { gql } from 'apollo-server-express'
 
 const responseInterface = gql`
   interface QueryPagination {
@@ -7,6 +7,6 @@ const responseInterface = gql`
     totalPage: Int!
     hasMore: Boolean!
   }
-`;
+`
 
-export default responseInterface;
+export default responseInterface

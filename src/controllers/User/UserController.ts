@@ -1,36 +1,37 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import TABLE from '../../db/tableName';
-import db from '../../db/Postgresql';
+import { Request, Response } from 'express'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import TABLE from '../../db/tableName'
+import db from '../../db/Postgresql'
 import {
   hashingPassword,
   generateToken,
   validateSignUpField,
   validateTokenSignIn,
-} from './User.helper';
+} from './User.helper'
 import {
   responseError,
   responseSuccess,
   statusCode,
   errorCode,
-} from '../../utils/response';
+} from '../../utils/response'
 
-export async function SignUp(req, res) {
-  const { name, email, password } = req.body;
+export async function SignUp(req: Request, res: Response) {
+  const { name, email, password } = req.body
 
-  const validation = await validateSignUpField(email, name, password);
+  const validation = await validateSignUpField(email, name, password)
 
   if (validation.error) {
     return res.status(statusCode.bad).send(
       responseError({
         errorCode: errorCode.invalidInput,
-        message: validation.message,
+        message: validation.message ?? '',
       })
-    );
+    )
   }
 
   try {
-    const hashedPassword = await hashingPassword(password);
+    const hashedPassword = await hashingPassword(password)
 
     // insert new user
     const { rows } = await db.query({
@@ -40,44 +41,44 @@ export async function SignUp(req, res) {
         RETURNING *
       `,
       values: [name, email, hashedPassword],
-    });
+    })
 
-    const accessToken = generateToken('access', { user_id: rows[0].user_id.toString() });
+    const accessToken = generateToken('access', { userId: rows[0].user_id.toString() })
     const refreshToken = generateToken('refresh', {
-      user_id: rows[0].user_id.toString(),
-    });
+      userId: rows[0].user_id.toString(),
+    })
 
     // insert new refresh_token
     db.query({
       text: `INSERT INTO ${TABLE.TOKEN} (user_id, refresh_token) VALUES ($1, $2)`,
       values: [rows[0].user_id, refreshToken],
-    });
+    })
 
-    delete rows[0].password;
+    delete rows[0].password
 
     return res.status(statusCode.created).send(
       responseSuccess({
         data: { ...rows[0], access_token: accessToken, refresh_token: refreshToken },
       })
-    );
+    )
   } catch (error) {
-    console.log(error);
+    console.log(error)
     res.status(500).send(
       responseError({
         errorCode: errorCode.serverError,
         message: 'server error, failed creating new user',
       })
-    );
+    )
   }
 }
 
-export async function SignIn(req, res) {
-  const { email, password } = req.body;
+export async function SignIn(req: Request, res: Response) {
+  const { email, password } = req.body
 
   const { rows: userData } = await db.query({
     text: `SELECT * FROM ${TABLE.USER} WHERE email = $1`,
     values: [email],
-  });
+  })
 
   // validation
   if (!userData.length) {
@@ -86,97 +87,99 @@ export async function SignIn(req, res) {
         errorCode: errorCode.notFound,
         message: 'invalid email or password',
       })
-    );
+    )
   }
 
-  const isPasswordMatch = await bcrypt.compare(password, userData[0].password);
+  const isPasswordMatch = await bcrypt.compare(password, userData[0].password)
   if (!isPasswordMatch) {
     return res.status(statusCode.notFound).send(
       responseError({
         errorCode: errorCode.notFound,
         message: 'invalid email or password',
       })
-    );
+    )
   }
 
-  validateTokenSignIn(userData[0].user_id);
+  validateTokenSignIn(userData[0].user_id)
 
   // generate new refresh_token
   const accessToken = generateToken('access', {
-    user_id: userData[0].user_id.toString(),
-  });
+    userId: userData[0].user_id.toString(),
+  })
   const refreshToken = generateToken('refresh', {
-    user_id: userData[0].user_id.toString(),
-  });
+    userId: userData[0].user_id.toString(),
+  })
 
   await db.query({
     text: `INSERT INTO ${TABLE.TOKEN} (user_id, refresh_token) VALUES ($1, $2)`,
     values: [userData[0].user_id, refreshToken],
-  });
+  })
 
-  delete userData[0].password;
+  delete userData[0].password
 
   return res.send(
     responseSuccess({
       data: { ...userData[0], access_token: accessToken, refresh_token: refreshToken },
     })
-  );
+  )
 }
 
-export async function SignOut(req, res) {
-  const refreshToken = req.body.refresh_token;
+export async function SignOut(req: Request, res: Response) {
+  const refreshToken = req.body.refresh_token
 
   try {
     await db.query({
       text: `DELETE FROM ${TABLE.TOKEN} WHERE refresh_token = $1`,
       values: [refreshToken],
-    });
+    })
   } catch (error) {
     return res.status(500).send(
       responseError({
         errorCode: errorCode.serverError,
         message: 'server error, failed logging out user',
       })
-    );
+    )
   }
 
   return res.send(
     responseSuccess({
       data: 'Sign out successfully',
     })
-  );
+  )
 }
 
-export async function RefreshToken(req, res) {
-  const { refreshToken } = req.body;
+export async function RefreshToken(req: Request, res: Response) {
+  const { refreshToken } = req.body
 
   try {
-    const data = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    const data = jwt.verify(refreshToken, process.env.REFRESH_SECRET ?? '') as {
+      userId: string
+    }
     const newAccessToken = generateToken('access', {
-      user_id: data.user_id,
-    });
+      userId: data.userId,
+    })
     const newRefreshToken = generateToken('refresh', {
-      user_id: data.user_id,
-    });
+      userId: data.userId,
+    })
 
     db.query({
       text: `UPDATE ${TABLE.TOKEN} SET refresh_token = $1 WHERE user_id = $2 AND refresh_token = $3`,
-      values: [newRefreshToken, data.user_id, refreshToken],
-    });
+      values: [newRefreshToken, data.userId, refreshToken],
+    })
 
     return res.send(
       responseSuccess({
         data: {
-          userId: data.user_id,
+          userId: data.userId,
           access_token: newAccessToken,
           refresh_token: newRefreshToken,
         },
       })
-    );
+    )
   } catch (error) {
     return res.status(statusCode.unauthorized).send({
       errorCode: errorCode.notAuthorized,
       message: 'User not authorized',
-    });
+    })
   }
 }

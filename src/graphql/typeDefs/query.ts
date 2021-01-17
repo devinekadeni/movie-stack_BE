@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-express';
+import { gql } from 'apollo-server-express'
 
 const queryType = gql`
   input MovieFilter {
@@ -22,6 +22,6 @@ const queryType = gql`
     movieMedia(id: ID!): MovieMedia
     searchMovies(page: Int!, searchParams: searchParams): MovieList!
   }
-`;
+`
 
-export default queryType;
+export default queryType

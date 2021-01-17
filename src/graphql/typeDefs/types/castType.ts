@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-express';
+import { gql } from 'apollo-server-express'
 
 const castType = gql`
   type Cast {
@@ -8,6 +8,6 @@ const castType = gql`
     character: String
     order: Int
   }
-`;
+`
 
-export default castType;
+export default castType

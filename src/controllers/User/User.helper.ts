@@ -1,43 +1,47 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import isEmail from 'validator/lib/isEmail';
-import db from '../../db/Postgresql';
-import TABLE from '../../db/tableName';
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import isEmail from 'validator/lib/isEmail'
+import db from '../../db/Postgresql'
+import TABLE from '../../db/tableName'
 
-export const hashingPassword = async (password) => {
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+export const hashingPassword = async (password: string) => {
+  const saltRounds = 10
+  const hashedPassword = await bcrypt.hash(password, saltRounds)
 
-  return hashedPassword;
-};
+  return hashedPassword
+}
 
-export const generateToken = (type, data) => {
+export const generateToken = (type: string, data: any) => {
   if (type === 'refresh') {
-    return jwt.sign(data, process.env.REFRESH_SECRET, { expiresIn: '7 days' });
+    return jwt.sign(data, process.env.REFRESH_SECRET ?? '', { expiresIn: '7 days' })
   } else if (type === 'access') {
-    return jwt.sign(data, process.env.ACCESS_SECRET, { expiresIn: '10m' });
+    return jwt.sign(data, process.env.ACCESS_SECRET ?? '', { expiresIn: '10m' })
   }
-};
+}
 
-export const validateSignUpField = async (email, name, password) => {
+export const validateSignUpField = async (
+  email: string,
+  name: string,
+  password: string
+) => {
   // email validation
   if (!isEmail(email)) {
     return {
       error: true,
       message: 'invalid email',
-    };
+    }
   }
 
   const { rows: duplicateEmail } = await db.query({
     text: `SELECT * FROM ${TABLE.USER} WHERE email = $1`,
     values: [email],
-  });
+  })
 
   if (duplicateEmail.length > 0) {
     return {
       error: true,
       message: 'email already exist',
-    };
+    }
   }
 
   // name validation
@@ -45,7 +49,7 @@ export const validateSignUpField = async (email, name, password) => {
     return {
       error: true,
       message: 'name length must be greater than five (2) characters',
-    };
+    }
   }
 
   // password validation
@@ -53,20 +57,20 @@ export const validateSignUpField = async (email, name, password) => {
     return {
       error: true,
       message: 'password character must be greater than five (5) characters',
-    };
+    }
   }
 
-  return { error: false };
-};
+  return { error: false }
+}
 
-export const validateTokenSignIn = async (userId) => {
+export const validateTokenSignIn = async (userId: string) => {
   // checking existing refresh token
   const { rows: existingToken } = await db.query({
     text: `SELECT id FROM ${TABLE.TOKEN} WHERE user_id = $1`,
     values: [userId],
-  });
+  })
 
-  if (existingToken.length === JSON.parse(process.env.USER_SESSION_LIMIT)) {
+  if (existingToken.length === JSON.parse(process.env.USER_SESSION_LIMIT ?? '')) {
     // delete oldest token if new user sign in (already reach max user session limit)
     // to be replaced with the new one
     db.query({
@@ -79,6 +83,6 @@ export const validateTokenSignIn = async (userId) => {
       ) 
     `,
       values: [userId],
-    });
+    })
   }
-};
+}

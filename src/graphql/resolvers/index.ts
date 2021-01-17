@@ -1,4 +1,4 @@
-import Query from './queryResolver';
+import Query from './queryResolver'
 
 const resolvers = {
   Query,
@@ -6,9 +6,9 @@ const resolvers = {
   // to fix this kind of warning https://github.com/apollographql/apollo-server/issues/1075
   QueryPagination: {
     __resolveType() {
-      return false;
+      return false
     },
   },
-};
+}
 
-export default resolvers;
+export default resolvers
