@@ -189,7 +189,7 @@ const query = {
       const mapFilterKeyTMDB: MappingFilter = {
         releaseDateStart: 'primary_release_date.gte',
         releaseDateEnd: 'primary_release_date.lte',
-        witghGenres: 'with_genres',
+        withGenres: 'with_genres',
         ratingStart: 'vote_average.gte',
         ratingEnd: 'vote_average.lte',
       }
