@@ -1,11 +1,13 @@
 import chalk from 'chalk'
 import { Pool, QueryConfig } from 'pg'
-import { devConfig, testConfig } from './config'
 
 const log = process.env.NODE_ENV === 'test' ? () => {} : console.log
-const config = process.env.NODE_ENV === 'test' ? testConfig : devConfig
+const connectionString =
+  process.env.NODE_ENV === 'test'
+    ? process.env.POSTGRES_URI_TEST
+    : process.env.POSTGRES_URI
 
-const pool = new Pool(config)
+const pool = new Pool({ connectionString })
 
 const postgresqlInstance = {
   query: async (query: QueryConfig) => {
