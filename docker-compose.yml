@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  # REST API
+  movie-be:
+    container_name: express-server
+    build: ./
+    command: npm run dev
+    working_dir: /usr/src/movie-stack_BE
+    ports:
+      - "3300:3300"
+    volumes:
+      # map ./ (current directory) to (:) container file system (/usr/src/movie-stack_BE)
+      - ./:/usr/src/movie-stack_BE
+      - /usr/src/movie-stack_BE/node_modules/
+    env_file:
+      - .env.docker
+    links:
+      # to tell container that `movie-be` and `postgres` service are connected
+      - postgres
+
+  # PostgreSQL
+  postgres:
+    container_name: postgres
+    build: ./docker/postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.docker

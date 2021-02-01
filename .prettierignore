@@ -2,3 +2,5 @@ README.md
 dist/
 node_modules/
 build/
+docker-compose.yml
+Dockerfile
