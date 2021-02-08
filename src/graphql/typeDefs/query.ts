@@ -5,8 +5,8 @@ const queryType = gql`
     releaseDateStart: String
     releaseDateEnd: String
     withGenres: String
-    ratingStart: Int
-    ratingEnd: Int
+    ratingStart: Float
+    ratingEnd: Float
   }
 
   input searchParams {
