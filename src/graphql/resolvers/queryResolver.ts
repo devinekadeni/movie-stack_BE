@@ -204,6 +204,15 @@ const query = {
         'vote_average.lte': 10,
         'with_runtime.gte': 0,
         'with_runtime,lte': 400,
+        'vote_count.gte': 100,
+      }
+
+      const isUpcomingMovie =
+        searchParams.filter.releaseDateStart &&
+        new Date(searchParams.filter.releaseDateStart).getTime() > new Date().getTime()
+
+      if (isUpcomingMovie) {
+        params['vote_count.gte'] = 0
       }
 
       if (Object.keys(searchParams.filter).length) {

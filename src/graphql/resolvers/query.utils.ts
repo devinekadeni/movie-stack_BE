@@ -117,7 +117,7 @@ export function generateMovieParam(movieType: string) {
       sort_by: 'vote_average.desc',
       'vote_average.gte': 0,
       'vote_average.lte': 10,
-      'vote_count.gte': 300,
+      'vote_count.gte': 100,
       'with_runtime.gte': 0,
       'with_runtime.lte': 400,
     },
