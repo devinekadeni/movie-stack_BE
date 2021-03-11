@@ -21,6 +21,7 @@ const queryType = gql`
     movieDetail(id: ID!): MovieDetail
     movieMedia(id: ID!): MovieMedia
     searchMovies(page: Int!, searchParams: searchParams): MovieList!
+    searchMoviesByKeyword(page: Int, keyword: String!): MovieList!
   }
 `
 

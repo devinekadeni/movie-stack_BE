@@ -250,6 +250,33 @@ const query = {
       return error
     }
   },
+  async searchMoviesByKeyword(
+    _: unknown,
+    { page = 1, keyword }: { page: number; keyword: string }
+  ) {
+    try {
+      const params = {
+        query: keyword,
+      }
+
+      const { data }: { data: DiscoverMovieTMDB } = await TmdbAPI({
+        method: 'get',
+        url: '/search/movie',
+        params,
+      })
+
+      return {
+        totalResult: data.total_results,
+        currentPage: data.page,
+        totalPage: data.total_pages,
+        hasMore: data.page !== data.total_pages,
+        movies: data.results.map((movie) => movieFormatter(movie)),
+      }
+    } catch (error) {
+      console.log(chalk.red(`GraphQL query: searchMoviesByKeyword(page: ${page})`), error)
+      return error
+    }
+  },
 }
 
 export default query
