@@ -254,6 +254,16 @@ const query = {
     _: unknown,
     { page = 1, keyword }: { page: number; keyword: string }
   ) {
+    if (!keyword) {
+      return {
+        totalResult: 0,
+        currentPage: 1,
+        totalPage: 0,
+        hasMore: false,
+        movies: [],
+      }
+    }
+
     try {
       const params = {
         query: keyword,
