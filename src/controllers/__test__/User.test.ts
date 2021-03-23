@@ -94,22 +94,10 @@ describe('SIGN IN - /signin', () => {
 
     expect(status).toBe('success')
     expect(
-      (jwt.verify(data.refresh_token, process.env.REFRESH_SECRET ?? '') as {
-        userId: string
-      }).userId
-    ).toBe(data.user_id.toString())
-    expect(
       (jwt.verify(data.access_token, process.env.ACCESS_SECRET ?? '') as {
         userId: string
       }).userId
     ).toBe(data.user_id.toString())
-
-    const { rows } = await db.query({
-      text: `SELECT * FROM ${TABLE.TOKEN} WHERE refresh_token = $1`,
-      values: [data.refresh_token],
-    })
-
-    expect(rows.length).toBeGreaterThan(0)
   })
 })
 
