@@ -56,9 +56,11 @@ export async function SignUp(req: Request, res: Response) {
 
     delete rows[0].password
 
+    res.cookie(process.env.REFRESH_TOKEN_KEY as string, refreshToken, { httpOnly: true })
+
     return res.status(statusCode.created).send(
       responseSuccess({
-        data: { ...rows[0], access_token: accessToken, refresh_token: refreshToken },
+        data: { ...rows[0], access_token: accessToken },
       })
     )
   } catch (error) {
@@ -117,9 +119,11 @@ export async function SignIn(req: Request, res: Response) {
 
   delete userData[0].password
 
+  res.cookie(process.env.REFRESH_TOKEN_KEY as string, refreshToken, { httpOnly: true })
+
   return res.send(
     responseSuccess({
-      data: { ...userData[0], access_token: accessToken, refresh_token: refreshToken },
+      data: { ...userData[0], access_token: accessToken },
     })
   )
 }
