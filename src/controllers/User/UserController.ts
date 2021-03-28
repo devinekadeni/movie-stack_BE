@@ -153,7 +153,7 @@ export async function SignOut(req: Request, res: Response) {
 }
 
 export async function RefreshToken(req: Request, res: Response) {
-  const { refreshToken } = req.body
+  const refreshToken = req.cookies[process.env.REFRESH_TOKEN_KEY as string]
 
   try {
     const data = jwt.verify(refreshToken, process.env.REFRESH_SECRET ?? '') as {
@@ -166,10 +166,21 @@ export async function RefreshToken(req: Request, res: Response) {
       userId: data.userId,
     })
 
+    const { rows: existingToken } = await db.query({
+      text: `SELECT * FROM ${TABLE.TOKEN} WHERE user_id = $1 AND refresh_token = $2`,
+      values: [data.userId, refreshToken],
+    })
+
+    if (!existingToken.length) {
+      throw Error('Not Authorized')
+    }
+
     db.query({
       text: `UPDATE ${TABLE.TOKEN} SET refresh_token = $1 WHERE user_id = $2 AND refresh_token = $3`,
       values: [newRefreshToken, data.userId, refreshToken],
     })
+
+    res.cookie(process.env.REFRESH_TOKEN_KEY as string, refreshToken, { httpOnly: true })
 
     return res.send(
       responseSuccess({
