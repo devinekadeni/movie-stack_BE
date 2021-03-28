@@ -23,6 +23,23 @@ const user1 = {
   refresh_token: '',
 }
 
+function getCookie(headers: { ['set-cookie']: string[] }, cname: string): string {
+  const name = cname + '='
+  const decodedCookie = decodeURIComponent(headers['set-cookie'][0])
+  const arrayOfCookie = decodedCookie.split(';')
+
+  for (let i = 0; i < arrayOfCookie.length; i++) {
+    let cookie = arrayOfCookie[i]
+    while (cookie.charAt(0) === ' ') {
+      cookie = cookie.substring(1)
+    }
+    if (cookie.indexOf(name) === 0) {
+      return cookie.substring(name.length, cookie.length)
+    }
+  }
+  return ''
+}
+
 beforeEach(async () => {
   const hashedPassword = await hashingPassword(user1.password)
   const { rows } = await db.query({
@@ -60,8 +77,13 @@ describe('SIGN UP - /signup', () => {
     }
     const response = await request(app).post('/user/signup').send(newUser).expect(201)
 
+    const refreshToken = getCookie(
+      response.headers,
+      process.env.REFRESH_TOKEN_KEY as string
+    )
+
+    expect(refreshToken).toBeDefined()
     expect(response.body.status).toBe('success')
-    console.log('response', response.body.data)
 
     const { rows } = await db.query({
       text: `SELECT * FROM ${TABLE.USER} WHERE user_id = $1`,
@@ -92,6 +114,12 @@ describe('SIGN IN - /signin', () => {
 
     const { status, data } = response.body
 
+    const refreshToken = getCookie(
+      response.headers,
+      process.env.REFRESH_TOKEN_KEY as string
+    )
+
+    expect(refreshToken).toBeDefined()
     expect(status).toBe('success')
     expect(
       (jwt.verify(data.access_token, process.env.ACCESS_SECRET ?? '') as {
@@ -119,13 +147,22 @@ describe('SIGN OUT - /signout', () => {
 })
 
 describe('REFRESH TOKEN - /refresh_token', () => {
-  test('should generate new token if req.body.refresh_token valid', async () => {
+  test('should generate new token if refresh_token still valid', async () => {
+    const responseUser = await request(app)
+      .post('/user/signin')
+      .send({ email: user1.email, password: user1.password })
+
     const response = await request(app)
       .post('/user/refresh_token')
-      .send({ refreshToken: user1.refresh_token })
+      .set('Cookie', responseUser.headers['set-cookie'])
       .expect(200)
 
     expect(response.body.status).toBe('success')
-    expect(response.body.data.refresh_token).not.toBe(user1.refresh_token)
+  })
+
+  test('should return unauthorized if refresh_token invalid', async () => {
+    const response = await request(app).post('/user/refresh_token').expect(401)
+
+    expect(response.body.errorCode).toBe('not_authorized')
   })
 })
