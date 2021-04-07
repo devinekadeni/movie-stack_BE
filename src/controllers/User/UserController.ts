@@ -1,16 +1,18 @@
 import { Request, Response } from 'express'
-import { AuthenticatedRequest } from '@/commonTypes'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+
+import { AuthenticatedRequest } from '@/commonTypes'
 import TABLE from '@/db/tableName'
 import db from '@/db/Postgresql'
+import { responseError, responseSuccess, statusCode, errorCode } from '@/utils/response'
+
 import {
   hashingPassword,
   generateToken,
   validateSignUpField,
   validateTokenSignIn,
 } from './User.helper'
-import { responseError, responseSuccess, statusCode, errorCode } from '@/utils/response'
 
 export async function SignUp(req: Request, res: Response) {
   const { name, email, password } = req.body

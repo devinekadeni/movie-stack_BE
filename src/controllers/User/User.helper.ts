@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import isEmail from 'validator/lib/isEmail'
-import db from '../../db/Postgresql'
-import TABLE from '../../db/tableName'
+
+import db from '@/db/Postgresql'
+import TABLE from '@/db/tableName'
 
 export const hashingPassword = async (password: string) => {
   const saltRounds = 10

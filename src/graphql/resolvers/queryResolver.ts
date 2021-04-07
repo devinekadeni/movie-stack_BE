@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 
-import TmdbAPI from '../../utils/TmdbAPI'
+import TmdbAPI from '@/utils/TmdbAPI'
+
 import {
   movieFormatter,
   generateMovieParam,

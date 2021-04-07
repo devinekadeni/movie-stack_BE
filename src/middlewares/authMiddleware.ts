@@ -1,7 +1,8 @@
 import { Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
-import { AuthenticatedRequest } from '../commonTypes'
-import { statusCode, errorCode } from '../utils/response'
+
+import { AuthenticatedRequest } from '@/commonTypes'
+import { statusCode, errorCode } from '@/utils/response'
 
 const authMiddleware = async (
   req: AuthenticatedRequest,

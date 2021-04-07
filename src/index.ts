@@ -3,10 +3,11 @@ import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
-import initializeRoute from './routes'
-import initializeLogging from './utils/logging'
 import { ApolloServer } from 'apollo-server-express'
-import { typeDefs, resolvers } from './graphql'
+
+import initializeRoute from '@/routes'
+import initializeLogging from '@/utils/logging'
+import { typeDefs, resolvers } from '@/graphql'
 
 const isProd = process.env.NODE_ENV === 'production'
 
