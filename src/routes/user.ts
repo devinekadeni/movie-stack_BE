@@ -1,8 +1,16 @@
 import express from 'express'
-import { SignUp, SignIn, SignOut, RefreshToken } from '../controllers/User/UserController'
+import authMiddleware from '@/middlewares/authMiddleware'
+import {
+  SignUp,
+  SignIn,
+  SignOut,
+  RefreshToken,
+  GetUserDetail,
+} from '@/controllers/User/UserController'
 
 const router = express.Router()
 
+router.get('/', authMiddleware, GetUserDetail)
 router.post('/signup', SignUp)
 router.post('/signin', SignIn)
 router.post('/signout', SignOut)

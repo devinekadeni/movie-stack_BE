@@ -1,20 +1,16 @@
 import { Request, Response } from 'express'
+import { AuthenticatedRequest } from '@/commonTypes'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import TABLE from '../../db/tableName'
-import db from '../../db/Postgresql'
+import TABLE from '@/db/tableName'
+import db from '@/db/Postgresql'
 import {
   hashingPassword,
   generateToken,
   validateSignUpField,
   validateTokenSignIn,
 } from './User.helper'
-import {
-  responseError,
-  responseSuccess,
-  statusCode,
-  errorCode,
-} from '../../utils/response'
+import { responseError, responseSuccess, statusCode, errorCode } from '@/utils/response'
 
 export async function SignUp(req: Request, res: Response) {
   const { name, email, password } = req.body
@@ -197,4 +193,29 @@ export async function RefreshToken(req: Request, res: Response) {
       message: 'User not authorized',
     })
   }
+}
+
+export async function GetUserDetail(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req
+
+  const { rows: userData } = await db.query({
+    text: `SELECT * FROM ${TABLE.USER} WHERE user_id = $1`,
+    values: [userId],
+  })
+  if (!userData.length) {
+    return res.status(statusCode.notFound).send(
+      responseError({
+        errorCode: errorCode.notFound,
+        message: 'oops, something wrong',
+      })
+    )
+  }
+
+  delete userData[0].password
+
+  return res.send(
+    responseSuccess({
+      data: userData[0],
+    })
+  )
 }
