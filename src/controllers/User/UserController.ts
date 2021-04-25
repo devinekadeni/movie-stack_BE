@@ -178,7 +178,9 @@ export async function RefreshToken(req: Request, res: Response) {
       values: [newRefreshToken, data.userId, refreshToken],
     })
 
-    res.cookie(process.env.REFRESH_TOKEN_KEY as string, refreshToken, { httpOnly: true })
+    res.cookie(process.env.REFRESH_TOKEN_KEY as string, newRefreshToken, {
+      httpOnly: true,
+    })
 
     return res.send(
       responseSuccess({
