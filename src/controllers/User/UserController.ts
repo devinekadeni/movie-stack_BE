@@ -127,13 +127,15 @@ export async function SignIn(req: Request, res: Response) {
 }
 
 export async function SignOut(req: Request, res: Response) {
-  const refreshToken = req.body.refresh_token
+  const refreshToken = req.cookies[process.env.REFRESH_TOKEN_KEY as string]
 
   try {
     await db.query({
       text: `DELETE FROM ${TABLE.TOKEN} WHERE refresh_token = $1`,
       values: [refreshToken],
     })
+
+    res.clearCookie(process.env.REFRESH_TOKEN_KEY as string)
   } catch (error) {
     return res.status(500).send(
       responseError({
