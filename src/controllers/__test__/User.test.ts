@@ -20,7 +20,6 @@ const user1 = {
   name: 'devin',
   email: 'devin@gmail.com',
   password: 'devin123',
-  refresh_token: '',
 }
 
 function getCookie(headers: { ['set-cookie']: string[] }, cname: string): string {
@@ -55,8 +54,6 @@ beforeEach(async () => {
     text: `INSERT INTO ${TABLE.TOKEN} (user_id, refresh_token) VALUES ($1, $2)`,
     values: [rows[0].user_id, refreshToken],
   })
-
-  user1.refresh_token = refreshToken
 })
 
 afterEach(async () => {
@@ -131,16 +128,25 @@ describe('SIGN IN - /signin', () => {
 
 describe('SIGN OUT - /signout', () => {
   test('should able to logout loggedin user', async () => {
+    const responseUser = await request(app)
+      .post('/user/signin')
+      .send({ email: user1.email, password: user1.password })
+
     const response = await request(app)
       .post('/user/signout')
-      .send({ refresh_token: user1.refresh_token })
+      .set('Cookie', responseUser.headers['set-cookie'])
       .expect(200)
 
     expect(response.body.status).toBe('success')
 
+    const refreshToken = getCookie(
+      response.headers,
+      process.env.REFRESH_TOKEN_KEY as string
+    )
+
     const { rows } = await db.query({
       text: `SELECT * FROM ${TABLE.TOKEN} WHERE refresh_token = $1`,
-      values: [user1.refresh_token],
+      values: [refreshToken],
     })
     expect(rows.length).toEqual(0)
   })
