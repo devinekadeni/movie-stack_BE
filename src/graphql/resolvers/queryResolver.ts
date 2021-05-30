@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 
 import TmdbAPI from '@/utils/TmdbAPI'
+import TABLE from '@/db/tableName'
 
 import {
   movieFormatter,
@@ -287,6 +288,34 @@ const query = {
       console.log(chalk.red(`GraphQL query: searchMoviesByKeyword(page: ${page})`), error)
       return error
     }
+  },
+  async bookmarkMovies(_: any, __: any, ctx: any) {
+    const { userId, db } = ctx
+
+    if (!userId) return []
+
+    const { rows: bookmarkData } = await db.query({
+      text: `SELECT * FROM ${TABLE.BOOKMARK} WHERE user_id = $1`,
+      values: [userId],
+    })
+
+    if (!bookmarkData.length) return []
+
+    const result = bookmarkData.map((val: any) => ({
+      id: val.id,
+      userId: val.user_id,
+      movieId: val.movie_id,
+      title: val.title || '',
+      poster: val.poster || '',
+      backdrop: val.backdrop || '',
+      genres: val.genres || [],
+      rating: val.rating || 0,
+      summary: val.summary,
+      releaseDate: val.releasedate,
+      duration: val.duration,
+    }))
+
+    return result
   },
 }
 

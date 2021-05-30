@@ -62,6 +62,20 @@ const movieType = gql`
     trailers: [Trailer]!
     backdrops: [Backdrop]
   }
+
+  type BookmarkMovies {
+    id: ID!
+    userId: String!
+    movieId: String!
+    title: String!
+    poster: String
+    backdrop: String
+    genres: [String]!
+    rating: Float
+    summary: String
+    releaseDate: String
+    duration: Int
+  }
 `
 
 export default movieType

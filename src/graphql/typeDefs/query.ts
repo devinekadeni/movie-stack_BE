@@ -22,6 +22,7 @@ const queryType = gql`
     movieMedia(id: ID!): MovieMedia
     searchMovies(page: Int!, searchParams: searchParams): MovieList!
     searchMoviesByKeyword(page: Int, keyword: String!): MovieList!
+    bookmarkMovies: [BookmarkMovies]!
   }
 `
 
