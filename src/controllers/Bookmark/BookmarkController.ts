@@ -27,7 +27,7 @@ export async function GetBookmarkMovie(req: AuthenticatedRequest, res: Response)
 
   return res.send(
     responseSuccess({
-      data: bookmarkData[0],
+      data: bookmarkData,
     })
   )
 }

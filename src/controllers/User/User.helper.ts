@@ -20,6 +20,15 @@ export const generateToken = (type: string, data: any) => {
   }
 }
 
+export const generateExpiryTokenUTC = (timeAddition: number) => {
+  const isoDate = new Date(new Date().getTime() + timeAddition * 1000).toISOString() // in milliseconds
+
+  const date = isoDate.substr(0,10);
+  const time = isoDate.substr(11,8)
+
+  return `${date} ${time}`
+}
+
 export const validateSignUpField = async (
   email: string,
   name: string,

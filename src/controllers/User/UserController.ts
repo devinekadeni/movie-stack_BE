@@ -12,7 +12,10 @@ import {
   generateToken,
   validateSignUpField,
   validateTokenSignIn,
+  generateExpiryTokenUTC,
 } from './User.helper'
+
+const TEN_MINUTE = 60*10
 
 export async function SignUp(req: Request, res: Response) {
   const { name, email, password } = req.body
@@ -42,6 +45,7 @@ export async function SignUp(req: Request, res: Response) {
     })
 
     const accessToken = generateToken('access', { userId: rows[0].user_id.toString() })
+    const newAccessTokenExpiryUTC = generateExpiryTokenUTC(TEN_MINUTE)
     const refreshToken = generateToken('refresh', {
       userId: rows[0].user_id.toString(),
     })
@@ -58,7 +62,11 @@ export async function SignUp(req: Request, res: Response) {
 
     return res.status(statusCode.created).send(
       responseSuccess({
-        data: { ...rows[0], access_token: accessToken },
+        data: {
+          ...rows[0],
+          access_token: accessToken,
+          access_token_expiry_UTC: newAccessTokenExpiryUTC,
+        },
       })
     )
   } catch (error) {
@@ -106,6 +114,7 @@ export async function SignIn(req: Request, res: Response) {
   const accessToken = generateToken('access', {
     userId: userData[0].user_id.toString(),
   })
+  const newAccessTokenExpiryUTC = generateExpiryTokenUTC(TEN_MINUTE)
   const refreshToken = generateToken('refresh', {
     userId: userData[0].user_id.toString(),
   })
@@ -121,7 +130,11 @@ export async function SignIn(req: Request, res: Response) {
 
   return res.send(
     responseSuccess({
-      data: { ...userData[0], access_token: accessToken },
+      data: {
+        ...userData[0],
+        access_token: accessToken,
+        access_token_expiry_UTC: newAccessTokenExpiryUTC,
+      },
     })
   )
 }
@@ -162,6 +175,8 @@ export async function RefreshToken(req: Request, res: Response) {
     const newAccessToken = generateToken('access', {
       userId: data.userId,
     })
+
+    const newAccessTokenExpiryUTC = generateExpiryTokenUTC(TEN_MINUTE)
     const newRefreshToken = generateToken('refresh', {
       userId: data.userId,
     })
@@ -189,7 +204,7 @@ export async function RefreshToken(req: Request, res: Response) {
         data: {
           userId: data.userId,
           access_token: newAccessToken,
-          refresh_token: newRefreshToken,
+          access_token_expiry_UTC: newAccessTokenExpiryUTC,
         },
       })
     )
