@@ -21,6 +21,18 @@ const movieType = gql`
     duration: Int
   }
 
+  type BookmarkMovie {
+    id: ID
+    title: String
+    poster: String
+    backdrop: String
+    genres: [String]!
+    rating: Float
+    summary: String
+    releaseDate: String
+    duration: Int
+  }
+
   type MovieList implements QueryPagination {
     totalResult: Int!
     currentPage: Int!
