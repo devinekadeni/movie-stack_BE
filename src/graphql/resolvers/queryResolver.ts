@@ -1,3 +1,4 @@
+import { AuthenticationError } from 'apollo-server-express'
 import chalk from 'chalk'
 
 import TmdbAPI from '@/utils/TmdbAPI'
@@ -292,7 +293,9 @@ const query = {
   async bookmarkMovies(_: any, __: any, ctx: any) {
     const { userId, db } = ctx
 
-    if (!userId) return []
+    if (!userId) {
+      throw new AuthenticationError('Not Authorized')
+    }
 
     const { rows: bookmarkData } = await db.query({
       text: `SELECT * FROM ${TABLE.BOOKMARK} WHERE user_id = $1`,
